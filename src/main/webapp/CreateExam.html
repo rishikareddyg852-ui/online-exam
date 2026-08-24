@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Create Exam</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        h3 {
+            color: #333;
+            margin-top: 30px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        /* Buttons */
+
+        .button-container {
+            width: 250px;
+            margin: 20px auto;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .dashboard-btn {
+            background-color: #007bff;
+        }
+
+        .dashboard-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .add-btn {
+            background-color: #17a2b8;
+        }
+
+        .add-btn:hover {
+            background-color: #117a8b;
+        }
+
+        .save-btn {
+            background-color: #28a745;
+        }
+
+        .save-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+        }
+
+        .remove-btn:hover {
+            background-color: #b02a37;
+        }
+
+        .manage-btn {
+            background-color: #6f42c1;
+        }
+
+        .manage-btn:hover {
+            background-color: #59339d;
+        }
+
+        .question-card {
+            padding: 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .question-card h4 {
+            margin-top: 0;
+        }
+
+        .q-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .q-row input {
+            width: 50%;
+        }
+
+        .remove-btn {
+            width: 150px;
+            float: right;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .message {
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Create Exam</h2>
+
+    <!-- Messages -->
+
+    <div id="message"></div>
+
+
+    <!-- Top buttons -->
+
+    <div class="button-container">
+
+        <button
+            type="button"
+            class="dashboard-btn"
+            onclick="window.location.href='AdminDashboardServlet'">
+            Dashboard
+        </button>
+
+    </div>
+
+
+    <!-- Exam Form -->
+
+    <form
+        method="POST"
+        action="CreateExamServlet"
+        id="examForm">
+
+        <input
+            type="text"
+            name="title"
+            placeholder="Exam Title"
+            required>
+
+        <textarea
+            name="description"
+            placeholder="Exam Description"
+            rows="3">
+        </textarea>
+
+        <input
+            type="number"
+            name="duration"
+            placeholder="Duration (minutes)"
+            min="1"
+            required>
+
+
+        <h3>Questions</h3>
+
+        <div id="questions-wrap"></div>
+
+
+        <!-- Add Question -->
+
+        <button
+            type="button"
+            class="add-btn"
+            onclick="addQuestion()">
+            + Add Question
+        </button>
+
+
+        <!-- Save Exam -->
+
+        <button
+            type="submit"
+            class="save-btn">
+            Save Exam
+        </button>
+
+    </form>
+
+
+    <!-- Manage Exams -->
+
+    <div class="button-container">
+
+        <button
+            type="button"
+            class="manage-btn"
+            onclick="window.location.href='ManageExamServlet'">
+            Manage Exams
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- Question Template -->
+
+<template id="question-template">
+
+    <div class="question-card">
+
+        <h4>Question</h4>
+
+        <button
+            type="button"
+            class="remove-btn"
+            onclick="this.parentElement.remove()">
+            Remove
+        </button>
+
+        <div class="clear"></div>
+
+        <textarea
+            name="question_text[]"
+            placeholder="Enter question"
+            rows="2"
+            required>
+        </textarea>
+
+
+        <div class="q-row">
+
+            <input
+                type="text"
+                name="option_a[]"
+                placeholder="Option A"
+                required>
+
+            <input
+                type="text"
+                name="option_b[]"
+                placeholder="Option B"
+                required>
+
+        </div>
+
+
+        <div class="q-row">
+
+            <input
+                type="text"
+                name="option_c[]"
+                placeholder="Option C"
+                required>
+
+            <input
+                type="text"
+                name="option_d[]"
+                placeholder="Option D"
+                required>
+
+        </div>
+
+
+        <select
+            name="correct_option[]"
+            required>
+
+            <option value="">
+                -- Select Correct Option --
+            </option>
+
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+
+        </select>
+
+    </div>
+
+</template>
+
+
+<script>
+
+    function addQuestion() {
+
+        const template =
+            document.getElementById("question-template");
+
+        const clone =
+            template.content.cloneNode(true);
+
+        document
+            .getElementById("questions-wrap")
+            .appendChild(clone);
+    }
+
+
+    // Add first question automatically
+
+    addQuestion();
+
+
+    // Display success/error message
+
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const success =
+        params.get("success");
+
+    const error =
+        params.get("error");
+
+    const message =
+        document.getElementById("message");
+
+
+    if (success) {
+
+        message.innerHTML =
+            '<div class="message success">'
+            + success +
+            '</div>';
+    }
+
+
+    if (error) {
+
+        message.innerHTML =
+            '<div class="message error">'
+            + error +
+            '</div>';
+    }
+
+</script>
+
+</body>
+
+</html>

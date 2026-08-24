@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Admin Login</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+        }
+
+        .container {
+            width: 380px;
+            margin: 80px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 96%;
+            padding: 12px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Login button */
+        .login-btn {
+            background-color: #007bff;
+        }
+
+        .login-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Create Account button */
+        .create-btn {
+            background-color: #28a745;
+        }
+
+        .create-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        /* Back button */
+        .back-btn {
+            background-color: #6c757d;
+        }
+
+        .back-btn:hover {
+            background-color: #545b62;
+        }
+
+        .link-text {
+            margin-top: 20px;
+            color: #555;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Admin Login</h2>
+
+        <div id="errorMessage"
+             class="error"
+             style="display:none;">
+        </div>
+
+        <form method="POST"
+              action="AdminLoginServlet">
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Enter Email"
+                required>
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Enter Password"
+                required>
+
+            <button
+                type="submit"
+                class="login-btn">
+                Login
+            </button>
+
+        </form>
+
+        <p class="link-text">
+            Don't have an account?
+        </p>
+
+        <button
+            type="button"
+            class="create-btn"
+            onclick="window.location.href='AdminRegisterServlet'">
+            Create Account
+        </button>
+
+        <button
+            type="button"
+            class="back-btn"
+            onclick="window.location.href='index.html'">
+            Back to Home
+        </button>
+
+    </div>
+
+    <script>
+
+        const params =
+            new URLSearchParams(window.location.search);
+
+        const error =
+            params.get("error");
+
+        if (error) {
+
+            const errorBox =
+                document.getElementById("errorMessage");
+
+            errorBox.textContent = error;
+
+            errorBox.style.display = "block";
+        }
+
+    </script>
+
+</body>
+</html>

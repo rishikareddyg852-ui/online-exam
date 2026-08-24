@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Online Examination</title>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Online Examination</h1>
+
+    <form action="ExamSubmitServlet" method="post">
+
+        <input type="hidden" name="exam_id" value="1">
+
+        <div class="question">
+            <p>1. Which language is used to create web pages?</p>
+
+            <label>
+                <input type="radio" name="q_1" value="A">
+                A. Java
+            </label>
+
+            <label>
+                <input type="radio" name="q_1" value="B">
+                B. HTML
+            </label>
+
+            <label>
+                <input type="radio" name="q_1" value="C">
+                C. Python
+            </label>
+
+            <label>
+                <input type="radio" name="q_1" value="D">
+                D. C++
+            </label>
+        </div>
+
+        <div class="question">
+            <p>2. Which database are we using?</p>
+
+            <label>
+                <input type="radio" name="q_2" value="A">
+                A. Oracle
+            </label>
+
+            <label>
+                <input type="radio" name="q_2" value="B">
+                B. MongoDB
+            </label>
+
+            <label>
+                <input type="radio" name="q_2" value="C">
+                C. MySQL
+            </label>
+
+            <label>
+                <input type="radio" name="q_2" value="D">
+                D. Firebase
+            </label>
+        </div>
+
+        <button type="submit">
+            Submit Exam
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

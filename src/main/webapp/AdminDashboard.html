@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard</title>
+
+<style>
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 230px;
+    height: 100vh;
+    background: #1e293b;
+    color: white;
+    padding: 20px;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo h2 {
+    font-size: 20px;
+}
+
+.logo p {
+    color: #cbd5e1;
+}
+
+.nav button {
+    width: 100%;
+    padding: 13px;
+    margin: 6px 0;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: white;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.nav button:hover {
+    background: #334155;
+}
+
+.logout {
+    background: #dc2626 !important;
+    margin-top: 20px !important;
+}
+
+.main {
+    margin-left: 230px;
+}
+
+.topbar {
+    background: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px #ddd;
+}
+
+.topbar h1 {
+    margin: 0;
+}
+
+.admin-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.content {
+    padding: 30px;
+}
+
+.welcome {
+    margin-bottom: 25px;
+}
+
+.welcome h2 {
+    margin: 0;
+}
+
+.welcome p {
+    color: #64748b;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px #ddd;
+}
+
+.card-title {
+    color: #64748b;
+}
+
+.card-number {
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.section-title {
+    margin-top: 35px;
+}
+
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.option {
+    background: white;
+    padding: 25px;
+    border: none;
+    border-radius: 10px;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 3px 10px #ddd;
+}
+
+.option:hover {
+    transform: translateY(-3px);
+}
+
+.option-icon {
+    font-size: 28px;
+}
+
+.option h3 {
+    margin-bottom: 5px;
+}
+
+.option p {
+    color: #64748b;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+        <h2>Online Examination</h2>
+        <p>Admin Panel</p>
+    </div>
+
+    <div class="nav">
+
+        <button onclick="goDashboard()">
+            🏠 Dashboard
+        </button>
+
+        <button onclick="createExam()">
+            📝 Create Exam
+        </button>
+
+        <button onclick="manageExam()">
+            📚 Manage Exams
+        </button>
+
+        <button onclick="manageQuestions()">
+            ❓ Manage Questions
+        </button>
+
+        <button onclick="viewResults()">
+            📊 View Results
+        </button>
+
+        <button class="logout"
+                onclick="logout()">
+            🚪 Logout
+        </button>
+
+    </div>
+
+</div>
+
+<div class="main">
+
+    <div class="topbar">
+
+        <h1>Admin Dashboard</h1>
+
+        <div class="admin-info">
+
+            <div class="admin-circle"
+                 id="adminInitial">
+                A
+            </div>
+
+            <span id="adminName">
+                Admin
+            </span>
+
+        </div>
+
+    </div>
+    <div class="content">
+
+        <div class="welcome">
+
+            <h2>
+                Welcome,
+                <span id="welcomeName">Admin</span>
+                👋
+            </h2>
+
+            <p>
+                Manage your online examinations
+                from this dashboard.
+            </p>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <div class="card-title">
+                    Total Exams
+                </div>
+
+                <div class="card-number"
+                     id="examCount">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Total Students
+                </div>
+
+                <div class="card-number"
+                     id="studentCount">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Total Results
+                </div>
+
+                <div class="card-number"
+                     id="resultCount">
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- QUICK ACTIONS -->
+
+        <h2 class="section-title">
+            Quick Actions
+        </h2>
+
+
+        <div class="options">
+
+
+            <button class="option"
+                    onclick="createExam()">
+
+                <div class="option-icon">
+                    📝
+                </div>
+
+                <h3>Create Exam</h3>
+
+                <p>
+                    Create a new examination
+                    and add questions.
+                </p>
+
+            </button>
+
+
+            <button class="option"
+                    onclick="manageExam()">
+
+                <div class="option-icon">
+                    📚
+                </div>
+
+                <h3>Manage Exams</h3>
+
+                <p>
+                    View and manage existing
+                    examinations.
+                </p>
+
+            </button>
+
+
+            <button class="option"
+                    onclick="manageQuestions()">
+
+                <div class="option-icon">
+                    ❓
+                </div>
+
+                <h3>Manage Questions</h3>
+
+                <p>
+                    Add and manage exam questions.
+                </p>
+
+            </button>
+
+
+            <button class="option"
+                    onclick="viewResults()">
+
+                <div class="option-icon">
+                    📊
+                </div>
+
+                <h3>View Results</h3>
+
+                <p>
+                    View student examination results.
+                </p>
+
+            </button>
+
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+    var params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    var name =
+        params.get("name");
+
+    var exams =
+        params.get("exams");
+
+    var students =
+        params.get("students");
+
+    var results =
+        params.get("results");
+
+
+    /* ADMIN NAME */
+
+    if (name) {
+
+        document.getElementById(
+            "adminName"
+        ).textContent = name;
+
+        document.getElementById(
+            "welcomeName"
+        ).textContent = name;
+
+        document.getElementById(
+            "adminInitial"
+        ).textContent =
+            name.charAt(0).toUpperCase();
+
+    }
+
+
+    /* EXAM COUNT */
+
+    if (exams) {
+
+        document.getElementById(
+            "examCount"
+        ).textContent = exams;
+
+    }
+
+
+    /* STUDENT COUNT */
+
+    if (students) {
+
+        document.getElementById(
+            "studentCount"
+        ).textContent = students;
+
+    }
+
+
+    /* RESULT COUNT */
+
+    if (results) {
+
+        document.getElementById(
+            "resultCount"
+        ).textContent = results;
+
+    }
+
+
+    /* DASHBOARD */
+
+    function goDashboard() {
+
+        window.location.href =
+            "AdminDashboardServlet";
+
+    }
+
+
+    /* CREATE EXAM */
+
+    function createExam() {
+
+        window.location.href =
+            "CreateExam.html";
+
+    }
+
+
+    /* MANAGE EXAMS */
+
+    function manageExam() {
+
+        window.location.href =
+            "ManageExam.html";
+
+    }
+
+
+    /* MANAGE QUESTIONS */
+
+    function manageQuestions() {
+
+        window.location.href =
+            "ManageQuestions.html";
+
+    }
+
+
+    /* VIEW RESULTS */
+
+    function viewResults() {
+
+        window.location.href =
+            "AdminViewResult.html";
+
+    }
+
+
+    /* LOGOUT */
+
+    function logout() {
+
+        window.location.href =
+            "LogoutServlet";
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

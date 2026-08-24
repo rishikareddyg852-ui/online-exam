@@ -1,0 +1,235 @@
+:root{
+  --paper:#F5F0E6;
+  --paper-dark:#EBE3D0;
+  --ink:#23262B;
+  --ink-soft:#5B5F66;
+  --navy:#1B2A4A;
+  --navy-soft:#2E3F63;
+  --red:#C1440E;
+  --red-soft:#a83a0c;
+  --line:#C9BFA8;
+  --green:#3E7D5A;
+  --white:#FFFDF9;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(27,42,74,0.04), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(193,68,14,0.05), transparent 40%),
+    var(--paper);
+  font-family:'Inter', sans-serif;
+  color:var(--ink);
+}
+
+a{ color:var(--navy); }
+
+/* ---------- header used on dashboard / exam pages ---------- */
+header.app-header{
+  background:var(--navy);
+  color:var(--white);
+  padding:18px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 2px 0 var(--red);
+}
+header.app-header.admin{ background:var(--red); box-shadow:0 2px 0 var(--navy); }
+header.app-header .brand{
+  font-family:'Zilla Slab', serif;
+  font-weight:700;
+  font-size:19px;
+}
+header.app-header .brand span{ color:#E7A17E; }
+header.app-header.admin .brand span{ color:#1B2A4A; background:#fff; padding:1px 6px; border-radius:3px; }
+.who{ display:flex; align-items:center; gap:14px; font-family:'IBM Plex Mono', monospace; font-size:12.5px; }
+.logout-btn{
+  background:transparent; border:1px solid rgba(255,255,255,0.35); color:var(--white);
+  padding:7px 14px; border-radius:5px; font-family:'Inter', sans-serif; font-size:12.5px;
+  font-weight:600; cursor:pointer;
+}
+.logout-btn:hover{ background:rgba(255,255,255,0.1); }
+
+main{ max-width:960px; margin:0 auto; padding:32px 24px 60px; }
+
+.eyebrow{
+  font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--ink-soft);
+}
+h1{ font-family:'Zilla Slab', serif; font-weight:700; font-size:28px; margin:6px 0 24px; color:var(--navy); }
+h2{ font-family:'Zilla Slab', serif; font-size:18px; margin:0 0 14px; color:var(--navy); }
+
+.panel{
+  background:var(--white); border:1px solid var(--line); border-radius:8px;
+  padding:22px; margin-bottom:22px;
+}
+
+/* ---------- form fields (login / register / exam create) ---------- */
+.field{ margin-bottom:16px; }
+.field label{
+  display:block; font-family:'IBM Plex Mono', monospace; font-size:10.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:6px;
+}
+.field input, .field select, .field textarea{
+  width:100%; padding:10px 12px; font-size:14px; font-family:'Inter', sans-serif;
+  border:1px solid var(--line); border-radius:6px; background:var(--paper); color:var(--ink); outline:none;
+}
+.field input:focus, .field select:focus, .field textarea:focus{ border-color:var(--navy); background:var(--white); }
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+.btn{
+  padding:11px 20px; border:none; border-radius:6px; background:var(--navy); color:var(--white);
+  font-family:'Zilla Slab', serif; font-weight:600; font-size:15px; cursor:pointer;
+}
+.btn:hover{ background:var(--navy-soft); }
+.btn.admin{ background:var(--red); }
+.btn.admin:hover{ background:var(--red-soft); }
+.btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+.status-msg{
+  margin-top:12px; font-size:13px; font-family:'IBM Plex Mono', monospace;
+  padding:9px 11px; border-radius:5px; display:none;
+}
+.status-msg.show{ display:block; }
+.status-msg.ok{ background:#E8F1EC; color:var(--green); border:1px solid #BFDACB; }
+.status-msg.err{ background:#FBEAE3; color:var(--red); border:1px solid #F0C7B4; }
+
+/* ---------- cards / tables / grids ---------- */
+.exam-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:18px; }
+.exam-card{
+  background:var(--white); border:1px solid var(--line); border-radius:8px;
+  padding:20px; position:relative; overflow:hidden;
+}
+.exam-card::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--red); }
+.exam-card h3{ font-family:'Zilla Slab', serif; font-size:18px; margin:0 0 6px; color:var(--navy); }
+.exam-meta{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-soft); margin-bottom:14px; }
+.exam-meta span{ display:block; margin-bottom:3px; }
+
+table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+th, td{ text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); }
+th{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+.empty-row td{ color:var(--ink-soft); font-family:'IBM Plex Mono', monospace; font-size:12.5px; padding:18px 8px; }
+
+.stats-row{ display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:14px; margin-bottom:28px; }
+.stat-card{ background:var(--white); border:1px solid var(--line); border-radius:8px; padding:16px 18px; }
+.stat-card .num{ font-family:'Zilla Slab', serif; font-weight:700; font-size:26px; color:var(--navy); }
+.stat-card .lbl{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); margin-top:2px; }
+
+/* ---------- exam-taking page ---------- */
+.timer{
+  font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:15px;
+  background:var(--white); border:1px solid var(--line); border-radius:6px;
+  padding:8px 14px; color:var(--red);
+}
+.question-block{
+  background:var(--white); border:1px solid var(--line); border-radius:8px;
+  padding:20px; margin-bottom:16px;
+}
+.question-block .qnum{
+  font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft);
+  text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;
+}
+.question-block .qtext{ font-size:15.5px; margin-bottom:14px; }
+.option-row{
+  display:flex; align-items:center; gap:10px; padding:9px 10px; border:1px solid var(--line);
+  border-radius:6px; margin-bottom:8px; cursor:pointer;
+}
+.option-row:hover{ border-color:var(--navy); }
+.option-row input{ accent-color:var(--navy); }
+
+.empty-state{
+  border:1px dashed var(--line); border-radius:8px; padding:40px 20px; text-align:center;
+  color:var(--ink-soft); font-family:'IBM Plex Mono', monospace; font-size:13px;
+}
+
+@media (max-width:480px){ .row2{ grid-template-columns:1fr; } }
+
+/* ---------- plain-POST pages: container, buttons stacked, error msg ---------- */
+.container{
+  max-width:420px;
+  margin:60px auto;
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:28px 30px 32px;
+  box-shadow:0 18px 40px -18px rgba(27,42,74,0.35);
+}
+.container h2{
+  font-family:'Zilla Slab', serif;
+  font-weight:700;
+  font-size:24px;
+  color:var(--navy);
+  margin:0 0 20px;
+}
+.container form{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-bottom:16px;
+}
+.container form input{
+  width:100%;
+  padding:10px 12px;
+  font-size:14px;
+  font-family:'Inter', sans-serif;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:var(--paper);
+  color:var(--ink);
+  outline:none;
+}
+.container form input:focus{ border-color:var(--navy); background:var(--white); }
+
+.container form button[type="submit"],
+.container .btn{
+  display:block;
+  width:100%;
+  padding:11px 16px;
+  border:none;
+  border-radius:6px;
+  background:var(--navy);
+  color:var(--white);
+  font-family:'Zilla Slab', serif;
+  font-weight:600;
+  font-size:15px;
+  cursor:pointer;
+  margin-bottom:10px;
+  text-align:center;
+}
+.container form button[type="submit"]:hover,
+.container .btn:hover{ background:var(--navy-soft); }
+
+.container .btn-success{ background:var(--green); }
+.container .btn-success:hover{ background:#33684a; }
+.container .btn-info{ background:var(--navy); }
+.container .btn-secondary{ background:var(--ink-soft); }
+.container .btn-secondary:hover{ background:#444750; }
+
+.link-text{
+  font-size:13px;
+  color:var(--ink-soft);
+  text-align:center;
+  margin:16px 0 8px;
+}
+
+.msg.error{
+  background:#FBEAE3;
+  color:var(--red);
+  border:1px solid #F0C7B4;
+  padding:10px 12px;
+  border-radius:6px;
+  font-size:13px;
+  margin-bottom:16px;
+}
+.msg.success{
+  background:#E8F1EC;
+  color:var(--green);
+  border:1px solid #BFDACB;
+  padding:10px 12px;
+  border-radius:6px;
+  font-size:13px;
+  margin-bottom:16px;
+}

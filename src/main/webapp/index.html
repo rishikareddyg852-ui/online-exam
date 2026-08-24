@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Examination System</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            width: 450px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .main-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        button {
+            border: none;
+            padding: 15px 30px;
+            font-size: 17px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .student {
+            background: #3498db;
+            color: white;
+        }
+
+        .admin {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .option-box {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .option-box h2 {
+            margin-bottom: 20px;
+        }
+
+        /* --- these three now stack one below the other --- */
+        .login,
+        .create,
+        .back {
+            display: block;
+            width: 100%;
+            margin: 0 0 12px 0;
+        }
+
+        .login {
+            background: #3498db;
+            color: white;
+        }
+
+        .create {
+            background: #f39c12;
+            color: white;
+        }
+
+        .back {
+            margin-top: 15px;
+            background: #777;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Online Examination System</h1>
+    <p class="subtitle">Continue as</p>
+
+    <!-- Student and Admin Buttons -->
+    <div id="mainButtons" class="main-buttons">
+        <button class="student" onclick="showOptions('student')">
+            Student
+        </button>
+
+        <button class="admin" onclick="showOptions('admin')">
+            Admin
+        </button>
+    </div>
+
+    <!-- Student Options -->
+    <div id="studentOptions" class="option-box">
+        <h2>Student</h2>
+
+        <button class="login"
+                onclick="window.location.href='StudentLoginServlet'">
+            Login
+        </button>
+
+        <button class="create"
+                onclick="window.location.href='StudentRegisterServlet'">
+            Create Account
+        </button>
+
+        <button class="back" onclick="goBack()">
+            Back
+        </button>
+    </div>
+
+    <!-- Admin Options -->
+    <div id="adminOptions" class="option-box">
+        <h2>Admin</h2>
+
+        <button class="login"
+                onclick="window.location.href='AdminLoginServlet'">
+            Login
+        </button>
+
+        <button class="create"
+                onclick="window.location.href='AdminRegisterServlet'">
+            Create Account
+        </button>
+
+        <button class="back" onclick="goBack()">
+            Back
+        </button>
+    </div>
+
+</div>
+
+<script>
+
+function showOptions(type) {
+
+    document.getElementById("mainButtons").style.display = "none";
+
+    if (type === "student") {
+        document.getElementById("studentOptions").style.display = "block";
+    }
+
+    if (type === "admin") {
+        document.getElementById("adminOptions").style.display = "block";
+    }
+}
+
+function goBack() {
+
+    document.getElementById("studentOptions").style.display = "none";
+    document.getElementById("adminOptions").style.display = "none";
+
+    document.getElementById("mainButtons").style.display = "flex";
+}
+
+</script>
+
+</body>
+</html>

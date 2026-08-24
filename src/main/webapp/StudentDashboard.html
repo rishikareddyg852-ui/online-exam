@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Student Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 230px;
+            height: 100vh;
+            background: #172554;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo h2 {
+            margin: 0;
+        }
+
+        .logo p {
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        .menu button {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .menu button:hover {
+            background: #1e3a8a;
+        }
+
+        .menu .logout {
+            background: #dc2626;
+        }
+
+        .main {
+            margin-left: 230px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+        }
+
+        .student-name {
+            background: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .welcome {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .welcome h2 {
+            margin-top: 0;
+        }
+
+        .welcome p {
+            color: #64748b;
+        }
+
+        .exam-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .exam-section h2 {
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        th {
+            background: #172554;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .start-btn {
+            background: #16a34a;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .start-btn:hover {
+            background: #15803d;
+        }
+
+        .message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .loading,
+        .no-exams {
+            text-align: center;
+            padding: 25px;
+        }
+
+        .no-questions {
+            color: #94a3b8;
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th,
+            td {
+                padding: 8px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <div class="logo">
+
+            <h2>Online Exam</h2>
+
+            <p>Student Portal</p>
+
+        </div>
+
+
+        <div class="menu">
+
+            <button type="button"
+                    onclick="loadExams()">
+
+                📝 Available Exams
+
+            </button>
+
+
+            <button type="button"
+                    onclick="viewResult()">
+
+                📊 My Results
+
+            </button>
+
+
+            <button type="button"
+                    class="logout"
+                    onclick="logout()">
+
+                🚪 Logout
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN CONTENT -->
+
+    <div class="main">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <h1>
+                Student Dashboard
+            </h1>
+
+
+            <div class="student-name">
+
+                👤
+
+                <span id="studentName">
+                    Student
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- WELCOME -->
+
+        <div class="welcome">
+
+            <h2>
+                Welcome Back! 👋
+            </h2>
+
+            <p>
+                View available exams,
+                take exams and check your results.
+            </p>
+
+        </div>
+
+
+        <!-- AVAILABLE EXAMS -->
+
+        <div class="exam-section">
+
+            <h2>
+                Available Exams
+            </h2>
+
+
+            <div id="message"></div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Title
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th>
+                            Questions
+                        </th>
+
+                        <th>
+                            Duration
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="examTableBody">
+
+                    <tr>
+
+                        <td colspan="5"
+                            class="loading">
+
+                            Loading exams...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+
+        /*
+         * LOAD DASHBOARD WHEN PAGE OPENS
+         */
+
+        window.onload = function() {
+
+            loadExams();
+
+        };
+
+
+        /*
+         * LOAD AVAILABLE EXAMS
+         */
+
+        function loadExams() {
+
+            const tableBody =
+                document.getElementById(
+                    "examTableBody"
+                );
+
+
+            tableBody.innerHTML =
+
+                "<tr>" +
+
+                "<td colspan='5' " +
+                "class='loading'>" +
+
+                "Loading exams..." +
+
+                "</td>" +
+
+                "</tr>";
+
+
+            document.getElementById(
+                "message"
+            ).innerHTML = "";
+
+
+            fetch("StudentDashboardServlet")
+
+                .then(function(response) {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Server error: " +
+                            response.status
+                        );
+
+                    }
+
+                    return response.json();
+
+                })
+
+
+                .then(function(data) {
+
+                    /*
+                     * CHECK LOGIN ERROR
+                     */
+
+                    if (data.error) {
+
+                        showError(
+                            data.error
+                        );
+
+                        return;
+
+                    }
+
+
+                    /*
+                     * SHOW STUDENT NAME
+                     */
+
+                    document.getElementById(
+                        "studentName"
+                    ).textContent =
+                        data.studentName ||
+                        "Student";
+
+
+                    /*
+                     * SHOW EXAMS
+                     */
+
+                    displayExams(
+                        data.exams || []
+                    );
+
+                })
+
+
+                .catch(function(error) {
+
+                    console.log(
+                        "Dashboard error:",
+                        error
+                    );
+
+
+                    showError(
+                        "Unable to load exams."
+                    );
+
+
+                    tableBody.innerHTML =
+
+                        "<tr>" +
+
+                        "<td colspan='5' " +
+                        "class='no-exams'>" +
+
+                        "Unable to load available exams." +
+
+                        "</td>" +
+
+                        "</tr>";
+
+                });
+
+        }
+
+
+        /*
+         * DISPLAY EXAMS
+         */
+
+        function displayExams(exams) {
+
+            const tableBody =
+                document.getElementById(
+                    "examTableBody"
+                );
+
+
+            tableBody.innerHTML = "";
+
+
+            /*
+             * NO EXAMS
+             */
+
+            if (!exams ||
+                exams.length === 0) {
+
+                tableBody.innerHTML =
+
+                    "<tr>" +
+
+                    "<td colspan='5' " +
+                    "class='no-exams'>" +
+
+                    "No exams available." +
+
+                    "</td>" +
+
+                    "</tr>";
+
+                return;
+
+            }
+
+
+            /*
+             * CREATE EXAM ROWS
+             */
+
+            exams.forEach(function(exam) {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                let actionHTML;
+
+
+                /*
+                 * EXAM HAS QUESTIONS
+                 */
+
+                if (Number(exam.totalQuestions) > 0) {
+
+                    actionHTML =
+
+                        "<button " +
+
+                        "type='button' " +
+
+                        "class='start-btn' " +
+
+                        "onclick='startExam(" +
+
+                        Number(exam.id) +
+
+                        ")'>" +
+
+                        "Start Exam" +
+
+                        "</button>";
+
+                }
+
+
+                /*
+                 * EXAM HAS NO QUESTIONS
+                 */
+
+                else {
+
+                    actionHTML =
+
+                        "<span " +
+
+                        "class='no-questions'>" +
+
+                        "No questions yet" +
+
+                        "</span>";
+
+                }
+
+
+                row.innerHTML =
+
+                    "<td>" +
+
+                    escapeHtml(
+                        exam.title
+                    ) +
+
+                    "</td>" +
+
+
+                    "<td>" +
+
+                    escapeHtml(
+                        exam.description
+                    ) +
+
+                    "</td>" +
+
+
+                    "<td>" +
+
+                    Number(
+                        exam.totalQuestions
+                    ) +
+
+                    "</td>" +
+
+
+                    "<td>" +
+
+                    Number(
+                        exam.duration
+                    ) +
+
+                    " min" +
+
+                    "</td>" +
+
+
+                    "<td>" +
+
+                    actionHTML +
+
+                    "</td>";
+
+
+                tableBody.appendChild(
+                    row
+                );
+
+            });
+
+        }
+
+
+        /*
+         * START EXAM
+         *
+         * ExamPlay.html receives examId
+         */
+
+        function startExam(examId) {
+
+            if (!examId) {
+
+                alert(
+                    "Exam ID is missing."
+                );
+
+                return;
+
+            }
+
+
+            window.location.href =
+                "ExamPlay.html?examId=" +
+                encodeURIComponent(
+                    examId
+                );
+
+        }
+
+
+        /*
+         * MY RESULTS
+         *
+         * IMPORTANT:
+         * Open HTML, NOT Servlet.
+         */
+
+        function viewResult() {
+
+            window.location.href =
+                "StudentResult.html";
+
+        }
+
+
+        /*
+         * LOGOUT
+         */
+
+        function logout() {
+
+            window.location.href =
+                "LogoutServlet";
+
+        }
+
+
+        /*
+         * SHOW ERROR
+         */
+
+        function showError(message) {
+
+            document.getElementById(
+                "message"
+            ).innerHTML =
+
+                "<div class='message'>" +
+
+                escapeHtml(
+                    message
+                ) +
+
+                "</div>";
+
+        }
+
+
+        /*
+         * ESCAPE HTML
+         */
+
+        function escapeHtml(text) {
+
+            if (text === null ||
+                text === undefined) {
+
+                return "";
+
+            }
+
+
+            return String(text)
+
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Results</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .table-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        #message {
+            text-align: center;
+            margin: 20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>My Results</h1>
+
+    <div class="table-box">
+
+        <p id="message">
+            Loading results...
+        </p>
+
+        <table id="resultTable"
+               style="display:none;">
+
+            <thead>
+
+                <tr>
+
+                    <th>Exam</th>
+
+                    <th>Score</th>
+
+                    <th>Total Marks</th>
+
+                    <th>Percentage</th>
+
+                    <th>Submitted At</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="resultBody">
+
+            </tbody>
+
+        </table>
+
+
+        <!-- BACK TO DASHBOARD -->
+
+        <button type="button"
+                class="back"
+                onclick="goBackToDashboard()">
+
+            Back to Dashboard
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ------------------------------------
+    // LOAD RESULTS
+    // ------------------------------------
+
+    fetch("StudentResultServlet")
+
+    .then(function(response) {
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server error"
+            );
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        // --------------------------------
+        // ERROR CHECK
+        // --------------------------------
+
+        if (data.error) {
+
+            document.getElementById(
+                "message"
+            ).innerText =
+                data.error;
+
+            return;
+        }
+
+
+        const results =
+            data.results;
+
+
+        const body =
+            document.getElementById(
+                "resultBody"
+            );
+
+
+        const table =
+            document.getElementById(
+                "resultTable"
+            );
+
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        // --------------------------------
+        // NO RESULTS
+        // --------------------------------
+
+        if (!results ||
+            results.length === 0) {
+
+            message.innerText =
+                "No results found.";
+
+            return;
+        }
+
+
+        // --------------------------------
+        // CLEAR TABLE
+        // --------------------------------
+
+        body.innerHTML = "";
+
+
+        // --------------------------------
+        // DISPLAY RESULTS
+        // --------------------------------
+
+        results.forEach(
+            function(result) {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                const exam =
+                    document.createElement(
+                        "td"
+                    );
+
+                exam.innerText =
+                    result.examTitle;
+
+
+                const score =
+                    document.createElement(
+                        "td"
+                    );
+
+                score.innerText =
+                    result.score;
+
+
+                const total =
+                    document.createElement(
+                        "td"
+                    );
+
+                total.innerText =
+                    result.totalMarks;
+
+
+                const percentage =
+                    document.createElement(
+                        "td"
+                    );
+
+                percentage.innerText =
+                    result.percentage + "%";
+
+
+                const submitted =
+                    document.createElement(
+                        "td"
+                    );
+
+                submitted.innerText =
+                    result.submittedAt;
+
+
+                row.appendChild(exam);
+
+                row.appendChild(score);
+
+                row.appendChild(total);
+
+                row.appendChild(percentage);
+
+                row.appendChild(submitted);
+
+
+                body.appendChild(row);
+
+            }
+        );
+
+
+        // --------------------------------
+        // SHOW TABLE
+        // --------------------------------
+
+        message.style.display =
+            "none";
+
+        table.style.display =
+            "table";
+
+    })
+
+    .catch(function(error) {
+
+        console.log(error);
+
+        document.getElementById(
+            "message"
+        ).innerText =
+            "Unable to load results.";
+
+    });
+
+
+    // ------------------------------------
+    // BACK TO DASHBOARD
+    // ------------------------------------
+
+    function goBackToDashboard() {
+
+        window.location.href =
+            "StudentDashboard.html";
+
+    }
+
+</script>
+
+</body>
+
+</html>

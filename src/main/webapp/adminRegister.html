@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Create Account</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h2>Admin - Create Account</h2>
+
+    <!--ERROR_BLOCK-->
+
+    <form method="POST" action="AdminRegisterServlet">
+        <input type="text" name="name" placeholder="Full Name" value="__NAME__" required>
+        <input type="email" name="email" placeholder="Email" value="__EMAIL__" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+        <button type="submit" class="btn-success">Create Account</button>
+    </form>
+
+    <p class="link-text">Already have an account?</p>
+    <button type="button" class="btn btn-info" onclick="window.location.href='AdminLoginServlet'">Login here</button>
+    <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">Back to Home</button>
+</div>
+</body>
+</html>

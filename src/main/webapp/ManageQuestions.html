@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Manage Questions</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+}
+
+.header {
+    background: #1e293b;
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.back-btn {
+    background: white;
+    color: #1e293b;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.container {
+    padding: 30px;
+}
+
+.page-title {
+    margin-bottom: 20px;
+}
+
+.page-title h2 {
+    margin: 0;
+}
+
+.page-title p {
+    color: #64748b;
+}
+
+.panel {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+}
+
+.panel h3 {
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+select, input[type=text], textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.add-btn {
+    margin-top: 18px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.add-btn:hover {
+    background: #15803d;
+}
+
+.exam-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+}
+
+th {
+    background: #1e293b;
+    color: white;
+    padding: 14px;
+    text-align: left;
+}
+
+td {
+    padding: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background: #f8fafc;
+}
+
+.delete-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.message {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+}
+
+.status-msg {
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+.status-ok {
+    color: #16a34a;
+}
+
+.status-err {
+    color: #dc2626;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h1>Manage Questions</h1>
+
+<button class="back-btn"
+onclick="goDashboard()">
+
+← Dashboard
+
+</button>
+
+</div>
+
+<div class="container">
+
+<div class="page-title">
+
+<h2>Question Bank</h2>
+
+<p>
+Select an exam to view, add, or delete its questions.
+</p>
+
+</div>
+
+<div class="panel">
+
+<label for="examSelect">Select Exam</label>
+
+<select id="examSelect" onchange="onExamChange()">
+    <option value="">-- Choose an exam --</option>
+</select>
+
+</div>
+
+<div class="panel" id="addPanel" style="display:none;">
+
+<h3>Add New Question</h3>
+
+<form id="addQuestionForm">
+
+    <label for="questionText">Question</label>
+    <textarea id="questionText" rows="2" required></textarea>
+
+    <div class="options-grid">
+
+        <div>
+            <label for="optionA">Option A</label>
+            <input type="text" id="optionA" required>
+        </div>
+
+        <div>
+            <label for="optionB">Option B</label>
+            <input type="text" id="optionB" required>
+        </div>
+
+        <div>
+            <label for="optionC">Option C</label>
+            <input type="text" id="optionC" required>
+        </div>
+
+        <div>
+            <label for="optionD">Option D</label>
+            <input type="text" id="optionD" required>
+        </div>
+
+    </div>
+
+    <label for="correctOption">Correct Option</label>
+    <select id="correctOption" required>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+    </select>
+
+    <button type="submit" class="add-btn">Add Question</button>
+
+    <div id="addStatus" class="status-msg"></div>
+
+</form>
+
+</div>
+
+<div class="exam-container" id="questionsPanel" style="display:none;">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Question</th>
+
+<th>A</th>
+
+<th>B</th>
+
+<th>C</th>
+
+<th>D</th>
+
+<th>Answer</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody id="questionTableBody">
+
+<tr>
+
+<td colspan="8" class="message">
+Select an exam above to view its questions.
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+var currentExamId = null;
+
+
+function loadExamOptions() {
+
+    fetch("ManageExamServlet")
+
+    .then(function(response) {
+        return response.json();
+    })
+
+    .then(function(exams) {
+
+        var select = document.getElementById("examSelect");
+
+        for (var i = 0; i < exams.length; i++) {
+
+            var opt = document.createElement("option");
+            opt.value = exams[i].id;
+            opt.textContent = exams[i].title;
+            select.appendChild(opt);
+
+        }
+
+    })
+
+    .catch(function(error) {
+        console.log(error);
+    });
+
+}
+
+
+function onExamChange() {
+
+    var select = document.getElementById("examSelect");
+    var examId = select.value;
+
+    if (!examId) {
+
+        document.getElementById("addPanel").style.display = "none";
+        document.getElementById("questionsPanel").style.display = "none";
+        return;
+
+    }
+
+    currentExamId = examId;
+
+    document.getElementById("addPanel").style.display = "block";
+    document.getElementById("questionsPanel").style.display = "block";
+
+    loadQuestions(examId);
+
+}
+
+
+function loadQuestions(examId) {
+
+    var tableBody = document.getElementById("questionTableBody");
+
+    tableBody.innerHTML =
+        "<tr><td colspan='8' class='message'>Loading questions...</td></tr>";
+
+    fetch("GetQuestionsServlet?examId=" + examId)
+
+    .then(function(response) {
+
+        if (!response.ok) {
+            throw new Error("Server error");
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        if (data.error) {
+
+            tableBody.innerHTML =
+                "<tr><td colspan='8' class='message'>" +
+                escapeHTML(data.error) +
+                "</td></tr>";
+
+            return;
+        }
+
+        var questions = data.questions || data;
+
+        tableBody.innerHTML = "";
+
+        if (!questions || questions.length === 0) {
+
+            tableBody.innerHTML =
+                "<tr><td colspan='8' class='message'>No questions yet for this exam.</td></tr>";
+
+            return;
+        }
+
+        for (var i = 0; i < questions.length; i++) {
+
+            var q = questions[i];
+
+            var row = document.createElement("tr");
+
+            row.innerHTML =
+
+                "<td>" + q.id + "</td>" +
+                "<td>" + escapeHTML(q.questionText) + "</td>" +
+                "<td>" + escapeHTML(q.optionA) + "</td>" +
+                "<td>" + escapeHTML(q.optionB) + "</td>" +
+                "<td>" + escapeHTML(q.optionC) + "</td>" +
+                "<td>" + escapeHTML(q.optionD) + "</td>" +
+                "<td>" + escapeHTML(q.correctOption) + "</td>" +
+
+                "<td>" +
+                "<button class='delete-btn' type='button' onclick='deleteQuestion(" + q.id + ")'>Delete</button>" +
+                "</td>";
+
+            tableBody.appendChild(row);
+
+        }
+
+    })
+
+    .catch(function(error) {
+
+        console.log(error);
+
+        tableBody.innerHTML =
+            "<tr><td colspan='8' class='message'>Unable to load questions.</td></tr>";
+
+    });
+
+}
+
+
+document.getElementById("addQuestionForm").addEventListener("submit", function (e) {
+
+    e.preventDefault();
+
+    if (!currentExamId) {
+        return;
+    }
+
+    var body = new URLSearchParams();
+    body.append("examId", currentExamId);
+    body.append("questionText", document.getElementById("questionText").value);
+    body.append("optionA", document.getElementById("optionA").value);
+    body.append("optionB", document.getElementById("optionB").value);
+    body.append("optionC", document.getElementById("optionC").value);
+    body.append("optionD", document.getElementById("optionD").value);
+    body.append("correctOption", document.getElementById("correctOption").value);
+
+    var statusEl = document.getElementById("addStatus");
+    statusEl.textContent = "Saving...";
+    statusEl.className = "status-msg";
+
+    fetch("AddQuestionServlet", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString()
+    })
+
+    .then(function (response) {
+        return response.text();
+    })
+
+    .then(function (result) {
+
+        statusEl.textContent = result;
+        statusEl.className = "status-msg status-ok";
+
+        document.getElementById("addQuestionForm").reset();
+
+        loadQuestions(currentExamId);
+
+    })
+
+    .catch(function (error) {
+
+        console.log(error);
+
+        statusEl.textContent = "Error adding question.";
+        statusEl.className = "status-msg status-err";
+
+    });
+
+});
+
+
+function deleteQuestion(id) {
+
+    var answer = confirm("Are you sure you want to delete this question?");
+
+    if (!answer) {
+        return;
+    }
+
+    fetch("DeleteQuestionServlet?id=" + id)
+
+    .then(function (response) {
+        return response.text();
+    })
+
+    .then(function (result) {
+
+        alert(result);
+
+        loadQuestions(currentExamId);
+
+    })
+
+    .catch(function (error) {
+
+        console.log(error);
+
+        alert("Error deleting question.");
+
+    });
+
+}
+
+
+function goDashboard() {
+
+    window.location.href = "AdminDashboardServlet";
+
+}
+
+
+function escapeHTML(text) {
+
+    if (text == null) {
+        return "";
+    }
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+window.onload = function () {
+
+    loadExamOptions();
+
+};
+
+</script>
+
+</body>
+
+</html>

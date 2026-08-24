@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Exam</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .header {
+            background: #1e293b;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            width: 500px;
+            max-width: 90%;
+            margin: 40px auto;
+        }
+
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #ddd;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 11px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .update {
+            background: #2563eb;
+        }
+
+        .cancel {
+            background: #64748b;
+            margin-left: 8px;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <h1>Edit Exam</h1>
+
+    </div>
+
+    <div class="container">
+
+        <div class="box">
+
+            <form id="editForm">
+
+                <input type="hidden"
+                       id="examId">
+
+                <label>
+                    Exam Title
+                </label>
+
+                <input type="text"
+                       id="title"
+                       required>
+
+                <label>
+                    Duration (Minutes)
+                </label>
+
+                <input type="number"
+                       id="duration"
+                       min="1"
+                       required>
+                       <button type="submit"
+                        class="update">
+
+                    Update Exam
+
+                </button>
+
+                <button type="button"
+                        class="cancel"
+                        onclick="goBack()">
+
+                    Cancel
+
+                </button>
+
+                <div id="message"></div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        var params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        var examId =
+            params.get("id");
+
+
+        if (!examId) {
+
+            document.getElementById(
+                "message"
+            ).textContent =
+                "Exam ID not found.";
+
+        } else {
+
+            document.getElementById(
+                "examId"
+            ).value = examId;
+
+            loadExam();
+
+        }
+
+
+        function loadExam() {
+
+            fetch(
+                "EditExamServlet?id=" + examId
+            )
+
+            .then(function(response) {
+
+                return response.json();
+
+            })
+
+            .then(function(exam) {
+
+                if (exam.error) {
+
+                    document.getElementById(
+                        "message"
+                    ).textContent =
+                        exam.error;
+
+                    return;
+                }
+
+                document.getElementById(
+                    "title"
+                ).value =
+                    exam.title;
+
+                document.getElementById(
+                    "duration"
+                ).value =
+                    exam.duration;
+
+            })
+
+            .catch(function(error) {
+
+                console.log(error);
+
+                document.getElementById(
+                    "message"
+                ).textContent =
+                    "Unable to load exam.";
+
+            });
+
+        }
+        document.getElementById(
+            "editForm"
+        ).addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                var title =
+                    document.getElementById(
+                        "title"
+                    ).value;
+
+
+                var duration =
+                    document.getElementById(
+                        "duration"
+                    ).value;
+
+
+                var data =
+                    "id=" +
+                    encodeURIComponent(examId) +
+
+                    "&title=" +
+                    encodeURIComponent(title) +
+
+                    "&duration=" +
+                    encodeURIComponent(duration);
+
+
+                fetch(
+                    "EditExamServlet",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/x-www-form-urlencoded"
+                        },
+
+                        body: data
+                    }
+                )
+
+                .then(function(response) {
+
+                    return response.text();
+
+                })
+
+                .then(function(result) {
+
+                    document.getElementById(
+                        "message"
+                    ).textContent =
+                        result;
+
+
+                    if (
+                        result ===
+                        "Exam updated successfully."
+                    ) {
+
+                        setTimeout(
+                            function() {
+
+                                window.location.href =
+                                    "ManageExam.html";
+
+                            },
+                            1000
+                        );
+
+                    }
+
+                })
+
+                .catch(function(error) {
+
+                    console.log(error);
+
+                    document.getElementById(
+                        "message"
+                    ).textContent =
+                        "Error updating exam.";
+
+                });
+
+            }
+        );
+        function goBack() {
+
+            window.location.href =
+                "ManageExam.html";
+
+        }
+
+    </script>
+
+</body>
+
+</html>
