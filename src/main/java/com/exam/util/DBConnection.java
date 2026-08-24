@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.Properties;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class DBConnection {
 
@@ -17,8 +20,8 @@ public class DBConnection {
     private static final String PORT     = getEnv("DB_PORT", "15069");
     private static final String DATABASE = getEnv("DB_NAME", "online_exam_db");
     private static final String USER     = getEnv("DB_USER", "avnadmin");
-    private static final String PASSWORD = getEnv("DB_PASSWORD", "");
-
+   // private static final String PASSWORD = getEnv("DB_PASSWORD", "");
+    private static final String PASSWORD = getEnv("DB_PASSWORD", getPropertyFallback("db.password", ""));
     // SSL is required for Aiven's MySQL. Locally (localhost) this is
     // harmless - useSSL will just be ignored/not needed.
     private static final String URL =
@@ -47,6 +50,22 @@ public class DBConnection {
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+    private static String getPropertyFallback(String propertyKey, String defaultFallback) {
+        Properties props = new Properties();
+        
+        // This looks inside your project's classpath (e.g., src/main/resources)
+        try (InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("config.properties")) {
+            if (input == null) {
+                return defaultFallback;
+            }
+            props.load(input);
+            String value = props.getProperty(propertyKey);
+            return (value == null || value.trim().isEmpty()) ? defaultFallback : value;
+        } catch (IOException e) {
+            System.err.println("Error reading config.properties file: " + e.getMessage());
+            return defaultFallback;
+        }
     }
     
     
