@@ -117,21 +117,19 @@
     </h2>
 
 
-    <!-- Error message -->
     <div id="errorMessage"
          class="error"
          style="display:none;">
     </div>
 
 
-    <!-- Login Form -->
     <form method="POST"
           action="StudentLoginServlet">
 
 
-        <input type="email"
-               name="email"
-               placeholder="Email"
+        <input type="text"
+               name="username"
+               placeholder="Username"
                required>
 
 
@@ -180,10 +178,6 @@
 <script>
 
 
-    /*
-     * Display error message
-     * received from Servlet.
-     */
     const params =
         new URLSearchParams(
             window.location.search
@@ -208,20 +202,14 @@
     }
 
 
-    /*
-     * Create account.
-     */
     function createAccount() {
 
         window.location.href =
-            "StudentRegisterServlet";
+            "StudentRegister.html";
 
     }
 
 
-    /*
-     * Back to home.
-     */
     function goHome() {
 
         window.location.href =

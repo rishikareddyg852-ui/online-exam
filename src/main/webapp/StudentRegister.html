@@ -113,16 +113,12 @@
     </h2>
 
 
-    <!-- Error message -->
-
     <div id="errorMessage"
          class="error"
          style="display:none;">
 
     </div>
 
-
-    <!-- Registration Form -->
 
     <form method="POST"
           action="StudentRegisterServlet">
@@ -137,6 +133,12 @@
         <input type="email"
                name="email"
                placeholder="Email"
+               required>
+
+
+        <input type="text"
+               name="username"
+               placeholder="Choose a Username"
                required>
 
 
@@ -191,9 +193,6 @@
 <script>
 
 
-    /*
-     * Read error from URL.
-     */
     const params =
         new URLSearchParams(
             window.location.search
@@ -204,9 +203,6 @@
         params.get("error");
 
 
-    /*
-     * Display error.
-     */
     if (error) {
 
         document.getElementById(
@@ -221,9 +217,6 @@
     }
 
 
-    /*
-     * Login page.
-     */
     function login() {
 
         window.location.href =
@@ -232,9 +225,6 @@
     }
 
 
-    /*
-     * Home page.
-     */
     function goHome() {
 
         window.location.href =
