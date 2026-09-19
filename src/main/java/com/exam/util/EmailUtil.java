@@ -13,7 +13,7 @@ public class EmailUtil {
     }
 
     private static final String BREVO_API_KEY = getEnv("BREVO_API_KEY", "");
-    private static final String SENDER_EMAIL = getEnv("SENDER_EMAIL", "rishikareddyg852@gmail.com");
+    private static final String SENDER_EMAIL = getEnv("SENDER_EMAIL", "onlineexamsystem26@gmail.com");
     private static final String SENDER_NAME = "Online Examination System";
 
     public static void sendCredentials(String toEmail, String name, String username, String password) {
