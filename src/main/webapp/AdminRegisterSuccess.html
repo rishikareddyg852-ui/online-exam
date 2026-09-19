@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Successful</title>
+    <title>Admin Registration Successful</title>
     <style>
         * { box-sizing: border-box; }
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f4f6f8;
+            background: #eef2f7;
         }
         .container {
-            width: 400px;
+            width: 380px;
             max-width: 90%;
-            margin: 70px auto;
-            background: white;
+            margin: 80px auto;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
             text-align: center;
         }
         h2 { color: #28a745; margin-bottom: 15px; }
@@ -44,22 +44,22 @@
             margin-bottom: 20px;
         }
         button {
-            width: 100%;
+            width: 96%;
             padding: 12px;
             border: none;
-            border-radius: 5px;
-            font-size: 15px;
-            cursor: pointer;
-            background: #007bff;
+            border-radius: 6px;
             color: white;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
         }
-        button:hover { opacity: 0.9; }
+        button:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Account Created!</h2>
+    <h2>Admin Account Created!</h2>
     <p>Save this username — you'll need it every time you log in.</p>
 
     <div class="username-box" id="usernameBox"></div>
@@ -68,8 +68,9 @@
         This username won't be shown again. Write it down now.
     </div>
 
-    <button onclick="window.location.href='StudentLogin.html'">Go to Login</button>
+    <button onclick="window.location.href='AdminLogin.html'">Go to Login</button>
 </div>
+
 <script>
     const params = new URLSearchParams(window.location.search);
     const username = params.get("username");
