@@ -1,47 +1,55 @@
 package com.exam.util;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Properties;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class EmailUtil {
 
-    private static final String SENDER_EMAIL = "rishikareddyg852@gmail.com";
-    private static final String SENDER_APP_PASSWORD = "xcaafdzbgeoywuid";
+    private static String getEnv(String key, String defaultValue) {
+        String value = System.getenv(key);
+        return (value != null && !value.isEmpty()) ? value : defaultValue;
+    }
+
+    private static final String BREVO_API_KEY = getEnv("BREVO_API_KEY", "");
+    private static final String SENDER_EMAIL = getEnv("SENDER_EMAIL", "rishikareddyg852@gmail.com");
+    private static final String SENDER_NAME = "Online Examination System";
 
     public static void sendCredentials(String toEmail, String name, String username, String password) {
 
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-
-        Session session = Session.getInstance(props, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(SENDER_EMAIL, SENDER_APP_PASSWORD);
-            }
-        });
-
         try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SENDER_EMAIL));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            message.setSubject("Your Online Examination System Login Details");
+            URL url = new URL("https://api.brevo.com/v3/smtp/email");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("accept", "application/json");
+            conn.setRequestProperty("api-key", BREVO_API_KEY);
+            conn.setRequestProperty("content-type", "application/json");
+            conn.setDoOutput(true);
 
-            String body = "Hello " + name + ",\n\n"
-                    + "Your account has been created successfully.\n\n"
-                    + "Username: " + username + "\n"
-                    + "Password: " + password + "\n\n"
-                    + "Please keep these details safe. You will need them to log in.\n\n"
-                    + "Regards,\nOnline Examination System";
+            String bodyText = "Hello " + name + ",\\n\\n"
+                    + "Your account has been created successfully.\\n\\n"
+                    + "Username: " + username + "\\n"
+                    + "Password: " + password + "\\n\\n"
+                    + "Please keep these details safe. You will need them to log in.\\n\\n"
+                    + "Regards,\\nOnline Examination System";
 
-            message.setText(body);
+            String jsonPayload = "{"
+                    + "\"sender\":{\"name\":\"" + SENDER_NAME + "\",\"email\":\"" + SENDER_EMAIL + "\"},"
+                    + "\"to\":[{\"email\":\"" + toEmail + "\",\"name\":\"" + name + "\"}],"
+                    + "\"subject\":\"Your Online Examination System Login Details\","
+                    + "\"textContent\":\"" + bodyText + "\""
+                    + "}";
 
-            Transport.send(message);
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
 
-        } catch (MessagingException e) {
+            int responseCode = conn.getResponseCode();
+            System.out.println("Brevo API response code: " + responseCode);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
