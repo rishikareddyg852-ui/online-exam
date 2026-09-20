@@ -401,9 +401,24 @@
 
     let isSubmitting = false;
 
-    document.getElementById(
-        "examForm"
-    ).addEventListener(
+    const examFormEl =
+        document.getElementById("examForm");
+
+    const submitBtnEl =
+        document.querySelector(".submit-button");
+
+    // Disable the button the INSTANT it's clicked -- before the confirm()
+    // dialog even opens. This is what actually guarantees no double-click
+    // or double-submit can happen, regardless of dialog timing.
+    submitBtnEl.addEventListener(
+        "click",
+        function() {
+            submitBtnEl.disabled = true;
+            submitBtnEl.textContent = "Submitting...";
+        }
+    );
+
+    examFormEl.addEventListener(
         "submit",
         function(event) {
 
@@ -420,8 +435,14 @@
                 );
 
             if (!confirmSubmit) {
+
+                // They backed out - re-enable so they can actually submit later
+                submitBtnEl.disabled = false;
+                submitBtnEl.textContent = "Submit Exam";
                 return;
             }
+
+            isSubmitting = true;
 
             submitExamForm();
         }
@@ -429,20 +450,9 @@
 
     function submitExamForm() {
 
-        isSubmitting = true;
+        const submitBtn = submitBtnEl;
 
-        const submitBtn =
-            document.querySelector(
-                ".submit-button"
-            );
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Submitting...";
-
-        const form =
-            document.getElementById(
-                "examForm"
-            );
+        const form = examFormEl;
 
         const formData =
             new FormData(form);
