@@ -124,8 +124,30 @@ public class ExamSubmitServlet extends HttpServlet {
 
         try {
 
+            ResultDAO resultDAO =
+                    new ResultDAO();
+
             // ---------------------------------------
-            // 4. Get exam
+            // 4. Block re-submission immediately
+            // ---------------------------------------
+
+            if (resultDAO.hasAttempted(
+                    studentId,
+                    examId
+            )) {
+
+                // Already submitted before - don't recalculate or resave,
+                // just send them to their existing result.
+                resp.sendRedirect(
+                        "StudentResult.html?examId=" + examId
+                );
+
+                return;
+            }
+
+
+            // ---------------------------------------
+            // 5. Get exam
             // ---------------------------------------
 
             ExamDAO examDAO =
@@ -148,7 +170,7 @@ public class ExamSubmitServlet extends HttpServlet {
 
 
             // ---------------------------------------
-            // 5. Get questions
+            // 6. Get questions
             // ---------------------------------------
 
             QuestionDAO questionDAO =
@@ -170,7 +192,7 @@ public class ExamSubmitServlet extends HttpServlet {
 
 
             // ---------------------------------------
-            // 6. Calculate score
+            // 7. Calculate score
             // ---------------------------------------
 
             int score = 0;
@@ -214,46 +236,34 @@ public class ExamSubmitServlet extends HttpServlet {
 
 
             // ---------------------------------------
-            // 7. Save result
+            // 8. Save result
             // ---------------------------------------
 
-            ResultDAO resultDAO =
-                    new ResultDAO();
+            try {
 
+                resultDAO.saveResult(
+                        studentId,
+                        examId,
+                        score,
+                        totalMarks
+                );
 
-            // Prevent duplicate result
+            } catch (SQLException dupEx) {
 
-            if (!resultDAO.hasAttempted(
-                    studentId,
-                    examId
-            )) {
-
-                try {
-
-                    resultDAO.saveResult(
-                            studentId,
-                            examId,
-                            score,
-                            totalMarks
-                    );
-
-                } catch (SQLException dupEx) {
-
-                    // Duplicate blocked by DB unique constraint - safe to ignore
-                    System.out.println(
-                            "Duplicate result submission blocked: "
-                            + dupEx.getMessage()
-                    );
-                }
+                // Duplicate blocked by DB unique constraint - safe to ignore
+                System.out.println(
+                        "Duplicate result submission blocked: "
+                        + dupEx.getMessage()
+                );
             }
 
 
             // ---------------------------------------
-            // 8. Go to HTML result page
+            // 9. Go to HTML result page
             // ---------------------------------------
 
             resp.sendRedirect(
-                    "StudentResult.html"
+                    "StudentResult.html?examId=" + examId
             );
 
 
