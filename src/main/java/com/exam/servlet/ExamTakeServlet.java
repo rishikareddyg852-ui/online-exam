@@ -2,6 +2,7 @@ package com.exam.servlet;
 
 import com.exam.dao.ExamDAO;
 import com.exam.dao.QuestionDAO;
+import com.exam.dao.ResultDAO;
 import com.exam.model.Exam;
 import com.exam.model.Question;
 
@@ -10,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,6 +29,32 @@ public class ExamTakeServlet extends HttpServlet {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+        // ---------------------------------------
+        // 0. Check student session
+        // ---------------------------------------
+
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("studentId") == null) {
+            response.getWriter().print(
+                    "{\"error\":\"Please login again.\",\"redirect\":\"index.html\"}"
+            );
+            return;
+        }
+
+        int studentId;
+
+        try {
+            studentId = Integer.parseInt(
+                    session.getAttribute("studentId").toString()
+            );
+        } catch (Exception e) {
+            response.getWriter().print(
+                    "{\"error\":\"Please login again.\",\"redirect\":\"index.html\"}"
+            );
+            return;
+        }
 
         String examIdText = request.getParameter("id");
 
@@ -53,6 +81,21 @@ public class ExamTakeServlet extends HttpServlet {
         }
 
         try {
+
+            // ---------------------------------------
+            // 1. Block access if already attempted
+            // ---------------------------------------
+
+            ResultDAO resultDAO = new ResultDAO();
+
+            if (resultDAO.hasAttempted(studentId, examId)) {
+                response.getWriter().print(
+                        "{\"error\":\"You have already submitted this exam.\","
+                        + "\"alreadyAttempted\":true,"
+                        + "\"redirect\":\"StudentResult.html?examId=" + examId + "\"}"
+                );
+                return;
+            }
 
             ExamDAO examDAO = new ExamDAO();
 
