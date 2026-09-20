@@ -384,11 +384,11 @@
     }
 
 
-    // ------------------------------------
-    // SUBMIT CONFIRMATION
+ // ------------------------------------
+    // SUBMIT CONFIRMATION (fetch-based, with retry on network failure)
     // ------------------------------------
 
-    let alreadySubmitted = false;
+    let isSubmitting = false;
 
     document.getElementById(
         "examForm"
@@ -396,9 +396,10 @@
         "submit",
         function(event) {
 
-            if (alreadySubmitted) {
+            // Always prevent default - we handle submission manually
+            event.preventDefault();
 
-                event.preventDefault();
+            if (isSubmitting) {
                 return;
             }
 
@@ -408,24 +409,68 @@
                 );
 
             if (!confirmSubmit) {
-
-                event.preventDefault();
                 return;
             }
 
-            alreadySubmitted = true;
-
-            const submitBtn =
-                document.querySelector(
-                    ".submit-button"
-                );
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Submitting...";
-
+            submitExamForm();
         }
     );
 
+    function submitExamForm() {
+
+        isSubmitting = true;
+
+        const submitBtn =
+            document.querySelector(
+                ".submit-button"
+            );
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting...";
+
+        const form =
+            document.getElementById(
+                "examForm"
+            );
+
+        const formData =
+            new FormData(form);
+
+        fetch(form.action, {
+            method: "POST",
+            body: formData
+        })
+        .then(function(response) {
+
+            if (!response.ok) {
+                throw new Error(
+                    "Server error while submitting"
+                );
+            }
+
+            // Success - server redirected us logically,
+            // now navigate to the result page ourselves
+            window.location.href =
+                "StudentResult.html";
+
+        })
+        .catch(function(error) {
+
+            console.log(error);
+
+            // Network error or server failure -
+            // re-enable the button so the user can retry
+            isSubmitting = false;
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Exam";
+
+            alert(
+                "Submission failed due to a network error. Please try again."
+            );
+
+        });
+    }
 
     // ------------------------------------
     // ERROR
