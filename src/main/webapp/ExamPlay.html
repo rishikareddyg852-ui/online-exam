@@ -1,635 +1,249 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Take Exam</title>
-
-    <style>
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 900px;
-            margin: auto;
-        }
-
-        .header {
-            background: #007bff;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .exam-info {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .question {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .option {
-            display: block;
-            padding: 12px;
-            margin: 8px 0;
-            background: #f5f5f5;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .option:hover {
-            background: #e8e8e8;
-        }
-
-        .submit-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-
-        .submit-button {
-            width: 100%;
-            padding: 15px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        .submit-button:hover {
-            background: #218838;
-        }
-
-        .submit-button:disabled {
-            background: #a3d9b1;
-            cursor: not-allowed;
-        }
-
-        #loading {
-            text-align: center;
-            font-size: 20px;
-        }
-
-        #error {
-            color: red;
-            background: #ffe6e6;
-            padding: 15px;
-            border-radius: 6px;
-            display: none;
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-    <div class="header">
-
-        <h1>Online Examination</h1>
-
-    </div>
-
-
-    <div id="loading">
-
-        Loading exam...
-
-    </div>
-
-
-    <div id="error"></div>
-
-
-    <div id="examPage"
-         style="display:none;">
-
-        <div class="exam-info">
-
-            <h2 id="examTitle"></h2>
-
-            <p id="examDescription"></p>
-
-            <p>
-
-                <b>Duration:</b>
-
-                <span id="examDuration"></span>
-
-                minutes
-
-            </p>
-
-        </div>
-
-
-        <!-- ===================================
-             EXAM FORM
-             =================================== -->
-
-        <form id="examForm"
-              action="ExamSubmitServlet"
-              method="post">
-
-            <!-- Exam ID -->
-
-            <input type="hidden"
-                   id="examId"
-                   name="exam_id">
-
-
-            <!-- Questions -->
-
-            <div id="questionsContainer">
-
-            </div>
-
-
-            <!-- Submit -->
-
-            <div class="submit-box">
-
-                <button type="submit"
-                        class="submit-button">
-
-                    Submit Exam
-
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-
-
-<script>
-
-
-    // ==========================================
-    // GET EXAM ID
-    // ==========================================
-
-    const url =
-        new URLSearchParams(
-            window.location.search
+<style>
+
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f1ff;
+        margin: 0;
+        padding: 20px;
+        color: #172033;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 900px;
+        margin: auto;
+    }
+
+    /* HEADER */
+
+    .header {
+        background: linear-gradient(
+            135deg,
+            #4a148c,
+            #7b1fa2
         );
 
+        color: #ffffff;
 
-    /*
-     * Supports both:
-     *
-     * ExamPlay.html?id=3
-     *
-     * and
-     *
-     * ExamPlay.html?examId=3
-     */
+        padding: 25px;
 
-    const examId =
-        url.get("id") || url.get("examId");
+        text-align: center;
 
+        border-radius: 12px;
 
-    // ==========================================
-    // CHECK EXAM ID
-    // ==========================================
+        margin-bottom: 20px;
 
-    if (!examId) {
+        box-shadow:
+            0 4px 12px rgba(74, 20, 140, 0.25);
+    }
 
-        showError(
-            "Exam ID is missing."
-        );
-
-    } else {
-
-        document.getElementById(
-            "examId"
-        ).value = examId;
-
-        loadExam(examId);
+    .header h1 {
+        margin: 0;
+        color: #ffffff;
+        font-size: 32px;
     }
 
 
-    // ==========================================
-    // LOAD EXAM
-    // ==========================================
+    /* EXAM INFORMATION */
 
-    function loadExam(id) {
+    .exam-info {
+        background: #ffffff;
 
-        fetch(
-            "ExamTakeServlet?id=" +
-            encodeURIComponent(id)
-        )
+        padding: 20px;
 
-        .then(function(response) {
+        border-radius: 12px;
 
-            if (!response.ok) {
+        margin-bottom: 20px;
 
-                throw new Error(
-                    "Server error"
-                );
-            }
+        border-left: 6px solid #7b1fa2;
 
-            return response.json();
+        box-shadow:
+            0 3px 10px rgba(0, 0, 0, 0.08);
+    }
 
-        })
+    .exam-info h2 {
+        color: #6a1b9a;
 
-        .then(function(data) {
+        margin-top: 0;
+    }
 
+    .exam-info p {
+        color: #455a64;
 
-            // ==================================
-            // ALREADY ATTEMPTED / REDIRECT
-            // ==================================
+        line-height: 1.6;
+    }
 
-            if (data.alreadyAttempted) {
-
-                document.getElementById(
-                    "loading"
-                ).style.display = "none";
-
-
-                const error =
-                    document.getElementById(
-                        "error"
-                    );
-
-
-                error.innerHTML =
-
-                    "<h2>You have already submitted this exam.</h2>" +
-
-                    "<p>You cannot attempt this exam again.</p>" +
-
-                    "<br>" +
-
-                    "<a href='StudentResult.html?examId=" +
-                    encodeURIComponent(id) +
-                    "'>View Result</a>";
-
-
-                error.style.display =
-                    "block";
-
-
-                return;
-            }
-
-
-            // ==================================
-            // SERVER REDIRECT
-            // ==================================
-
-            if (data.redirect) {
-
-                window.location.href =
-                    data.redirect;
-
-                return;
-            }
-
-
-            // ==================================
-            // ERROR
-            // ==================================
-
-            if (data.error) {
-
-                showError(
-                    data.error
-                );
-
-                return;
-            }
-
-
-            // ==================================
-            // DISPLAY EXAM DETAILS
-            // ==================================
-
-            document.getElementById(
-                "examTitle"
-            ).innerText =
-                data.title;
-
-
-            document.getElementById(
-                "examDescription"
-            ).innerText =
-                data.description;
-
-
-            document.getElementById(
-                "examDuration"
-            ).innerText =
-                data.duration;
-
-
-            // ==================================
-            // DISPLAY QUESTIONS
-            // ==================================
-
-            displayQuestions(
-                data.questions
-            );
-
-
-            // ==================================
-            // SHOW EXAM PAGE
-            // ==================================
-
-            document.getElementById(
-                "loading"
-            ).style.display =
-                "none";
-
-
-            document.getElementById(
-                "examPage"
-            ).style.display =
-                "block";
-
-        })
-
-        .catch(function(error) {
-
-            console.log(error);
-
-            showError(
-                "Error loading exam."
-            );
-
-        });
-
+    .exam-info b {
+        color: #37474f;
     }
 
 
-    // ==========================================
-    // DISPLAY QUESTIONS
-    // ==========================================
+    /* QUESTION */
 
-    function displayQuestions(questions) {
+    .question {
+        background: #ffffff;
 
-        const container =
-            document.getElementById(
-                "questionsContainer"
-            );
+        padding: 20px;
 
+        border-radius: 12px;
 
-        container.innerHTML = "";
+        margin-bottom: 20px;
 
+        border-left: 5px solid #ff9800;
 
-        if (!questions ||
-            questions.length === 0) {
+        box-shadow:
+            0 3px 10px rgba(0, 0, 0, 0.08);
+    }
 
-            showError(
-                "No questions available."
-            );
+    .question h3 {
+        color: #ef6c00;
 
-            return;
-        }
+        margin-top: 0;
+    }
 
+    .question p {
+        color: #172033;
 
-        questions.forEach(
-            function(q, index) {
+        font-size: 17px;
 
-
-                const div =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                div.className =
-                    "question";
-
-
-                div.innerHTML =
-
-                    "<h3>Question " +
-                    (index + 1) +
-                    "</h3>" +
-
-                    "<p><b>" +
-                    q.questionText +
-                    "</b></p>" +
-
-
-                    "<label class='option'>" +
-
-                    "<input type='radio' " +
-
-                    "name='q_" +
-                    q.id +
-                    "' " +
-
-                    "value='A'>" +
-
-                    " " +
-                    q.optionA +
-
-                    "</label>" +
-
-
-                    "<label class='option'>" +
-
-                    "<input type='radio' " +
-
-                    "name='q_" +
-                    q.id +
-                    "' " +
-
-                    "value='B'>" +
-
-                    " " +
-                    q.optionB +
-
-                    "</label>" +
-
-
-                    "<label class='option'>" +
-
-                    "<input type='radio' " +
-
-                    "name='q_" +
-                    q.id +
-                    "' " +
-
-                    "value='C'>" +
-
-                    " " +
-                    q.optionC +
-
-                    "</label>" +
-
-
-                    "<label class='option'>" +
-
-                    "<input type='radio' " +
-
-                    "name='q_" +
-                    q.id +
-                    "' " +
-
-                    "value='D'>" +
-
-                    " " +
-                    q.optionD +
-
-                    "</label>";
-
-
-                container.appendChild(
-                    div
-                );
-
-            }
-        );
-
+        line-height: 1.6;
     }
 
 
-    // ==========================================
-    // SUBMIT EXAM
-    // ==========================================
+    /* OPTIONS */
 
-    let isSubmitting = false;
+    .option {
+        display: block;
 
+        padding: 13px;
 
-    const examFormEl =
-        document.getElementById(
-            "examForm"
-        );
+        margin: 9px 0;
 
+        background: #eef5ff;
 
-    const submitBtnEl =
-        document.querySelector(
-            ".submit-button"
-        );
+        color: #263238;
 
+        border: 1px solid #b8cff0;
 
-    examFormEl.addEventListener(
-        "submit",
-        function(event) {
+        border-radius: 8px;
 
+        cursor: pointer;
 
-            // Prevent normal submission first
-            event.preventDefault();
+        transition: 0.2s;
+    }
 
+    .option:hover {
+        background: #ede7f6;
 
-            // Prevent double submission
-            if (isSubmitting) {
+        color: #4a148c;
 
-                return;
-            }
+        border-color: #9575cd;
+    }
 
-
-            // Confirmation
-            const confirmSubmit =
-                confirm(
-                    "Are you sure you want to submit the exam?"
-                );
-
-
-            if (!confirmSubmit) {
-
-                return;
-            }
-
-
-            // ==================================
-            // LOCK SUBMISSION
-            // ==================================
-
-            isSubmitting = true;
-
-
-            submitBtnEl.disabled =
-                true;
-
-
-            submitBtnEl.textContent =
-                "Please wait...";
-
-
-            // ==================================
-            // NORMAL FORM SUBMISSION
-            // ==================================
-
-            /*
-             * This sends the form directly to:
-             *
-             * ExamSubmitServlet
-             *
-             * The servlet will calculate the score,
-             * save the result and redirect to:
-             *
-             * StudentResult.html?examId=...
-             */
-
-            examFormEl.submit();
-
-        }
-    );
-
-
-    // ==========================================
-    // SHOW ERROR
-    // ==========================================
-
-    function showError(message) {
-
-
-        document.getElementById(
-            "loading"
-        ).style.display =
-            "none";
-
-
-        const error =
-            document.getElementById(
-                "error"
-            );
-
-
-        error.innerText =
-            message;
-
-
-        error.style.display =
-            "block";
-
+    .option input {
+        margin-right: 8px;
     }
 
 
-</script>
+    /* SUBMIT BOX */
 
-</body>
+    .submit-box {
+        background: #ffffff;
 
-</html>
+        padding: 20px;
+
+        border-radius: 12px;
+
+        margin-bottom: 30px;
+
+        box-shadow:
+            0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+
+    /* SUBMIT BUTTON */
+
+    .submit-button {
+        width: 100%;
+
+        padding: 15px;
+
+        background: #00897b;
+
+        color: #ffffff;
+
+        border: none;
+
+        border-radius: 8px;
+
+        font-size: 18px;
+
+        font-weight: bold;
+
+        cursor: pointer;
+    }
+
+    .submit-button:hover {
+        background: #00695c;
+    }
+
+    .submit-button:disabled {
+        background: #78909c;
+
+        color: #ffffff;
+
+        cursor: not-allowed;
+    }
+
+
+    /* LOADING */
+
+    #loading {
+        text-align: center;
+
+        font-size: 20px;
+
+        color: #6a1b9a;
+
+        font-weight: bold;
+
+        padding: 20px;
+    }
+
+
+    /* ERROR */
+
+    #error {
+        color: #b71c1c;
+
+        background: #ffebee;
+
+        border: 1px solid #ef9a9a;
+
+        padding: 15px;
+
+        border-radius: 8px;
+
+        display: none;
+
+        margin-bottom: 20px;
+    }
+
+
+    /* RESULT LINK INSIDE ERROR */
+
+    #error a {
+        color: #6a1b9a;
+
+        font-weight: bold;
+
+        text-decoration: none;
+    }
+
+    #error a:hover {
+        color: #4a148c;
+
+        text-decoration: underline;
+    }
+
+</style>
