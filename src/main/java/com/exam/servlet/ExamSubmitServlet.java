@@ -42,6 +42,7 @@ public class ExamSubmitServlet extends HttpServlet {
             return;
         }
 
+
         // ---------------------------------------
         // 2. Get student ID
         // ---------------------------------------
@@ -55,6 +56,7 @@ public class ExamSubmitServlet extends HttpServlet {
 
             return;
         }
+
 
         int studentId;
 
@@ -72,6 +74,7 @@ public class ExamSubmitServlet extends HttpServlet {
             return;
         }
 
+
         // ---------------------------------------
         // 3. Get exam ID
         // ---------------------------------------
@@ -79,13 +82,13 @@ public class ExamSubmitServlet extends HttpServlet {
         String examIdText =
                 req.getParameter("exam_id");
 
-        // Also support examId
         if (examIdText == null ||
                 examIdText.trim().isEmpty()) {
 
             examIdText =
                     req.getParameter("examId");
         }
+
 
         if (examIdText == null ||
                 examIdText.trim().isEmpty()) {
@@ -96,6 +99,7 @@ public class ExamSubmitServlet extends HttpServlet {
 
             return;
         }
+
 
         int examId;
 
@@ -115,13 +119,15 @@ public class ExamSubmitServlet extends HttpServlet {
             return;
         }
 
+
         try {
 
             ResultDAO resultDAO =
                     new ResultDAO();
 
+
             // ---------------------------------------
-            // 4. Block re-submission
+            // 4. Check already submitted
             // ---------------------------------------
 
             if (resultDAO.hasAttempted(
@@ -130,11 +136,13 @@ public class ExamSubmitServlet extends HttpServlet {
             )) {
 
                 resp.sendRedirect(
-                        "StudentResult.html?examId=" + examId
+                        "StudentResult.html?examId="
+                                + examId
                 );
 
                 return;
             }
+
 
             // ---------------------------------------
             // 5. Get exam
@@ -148,6 +156,7 @@ public class ExamSubmitServlet extends HttpServlet {
                             examId
                     );
 
+
             if (exam == null) {
 
                 resp.sendRedirect(
@@ -156,6 +165,7 @@ public class ExamSubmitServlet extends HttpServlet {
 
                 return;
             }
+
 
             // ---------------------------------------
             // 6. Get questions
@@ -169,6 +179,7 @@ public class ExamSubmitServlet extends HttpServlet {
                             examId
                     );
 
+
             if (questions == null ||
                     questions.isEmpty()) {
 
@@ -176,6 +187,7 @@ public class ExamSubmitServlet extends HttpServlet {
                         "No questions found for this exam."
                 );
             }
+
 
             // ---------------------------------------
             // 7. Calculate score
@@ -186,6 +198,7 @@ public class ExamSubmitServlet extends HttpServlet {
             int totalMarks =
                     questions.size();
 
+
             for (Question question :
                     questions) {
 
@@ -195,8 +208,10 @@ public class ExamSubmitServlet extends HttpServlet {
                                 question.getId()
                         );
 
+
                 String correctAnswer =
                         question.getCorrectOption();
+
 
                 if (studentAnswer != null &&
                         correctAnswer != null) {
@@ -207,6 +222,7 @@ public class ExamSubmitServlet extends HttpServlet {
                     correctAnswer =
                             correctAnswer.trim();
 
+
                     if (studentAnswer.equalsIgnoreCase(
                             correctAnswer
                     )) {
@@ -215,6 +231,7 @@ public class ExamSubmitServlet extends HttpServlet {
                     }
                 }
             }
+
 
             // ---------------------------------------
             // 8. Save result
@@ -232,10 +249,8 @@ public class ExamSubmitServlet extends HttpServlet {
             } catch (SQLException e) {
 
                 /*
-                 * If another request submitted the same
-                 * student + exam at the same time,
-                 * the database UNIQUE constraint blocks
-                 * the second INSERT.
+                 * Database UNIQUE constraint protects
+                 * against duplicate submissions.
                  */
 
                 if (resultDAO.hasAttempted(
@@ -244,23 +259,26 @@ public class ExamSubmitServlet extends HttpServlet {
                 )) {
 
                     resp.sendRedirect(
-                            "StudentResult.html?examId=" + examId
+                            "StudentResult.html?examId="
+                                    + examId
                     );
 
                     return;
                 }
 
-                // Some other database error
                 throw e;
             }
+
 
             // ---------------------------------------
             // 9. Go to result page
             // ---------------------------------------
 
             resp.sendRedirect(
-                    "StudentResult.html?examId=" + examId
+                    "StudentResult.html?examId="
+                            + examId
             );
+
 
         } catch (SQLException e) {
 
@@ -271,6 +289,7 @@ public class ExamSubmitServlet extends HttpServlet {
                             + e.getMessage(),
                     e
             );
+
 
         } catch (Exception e) {
 

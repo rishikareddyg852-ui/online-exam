@@ -212,31 +212,26 @@
     // ---------------------------------------
 
     const url =
-        new URLSearchParams(
-            window.location.search
-        );
+    new URLSearchParams(
+        window.location.search
+    );
 
-    const examId =
-        url.get("id");
+const examId =
+    url.get("id") || url.get("examId");
 
+if (!examId) {
 
-    // ---------------------------------------
-    // Check Exam ID
-    // ---------------------------------------
+    showError(
+        "Exam ID is missing."
+    );
 
-    if (!examId) {
+} else {
 
-        showError(
-            "Exam ID is missing."
-        );
+    document.getElementById("examId").value =
+        examId;
 
-    } else {
-
-        document.getElementById("examId").value =
-            examId;
-
-        loadExam(examId);
-    }
+    loadExam(examId);
+}
 
 
     // ---------------------------------------
