@@ -228,12 +228,23 @@ public class ExamSubmitServlet extends HttpServlet {
                     examId
             )) {
 
-                resultDAO.saveResult(
-                        studentId,
-                        examId,
-                        score,
-                        totalMarks
-                );
+                try {
+
+                    resultDAO.saveResult(
+                            studentId,
+                            examId,
+                            score,
+                            totalMarks
+                    );
+
+                } catch (SQLException dupEx) {
+
+                    // Duplicate blocked by DB unique constraint - safe to ignore
+                    System.out.println(
+                            "Duplicate result submission blocked: "
+                            + dupEx.getMessage()
+                    );
+                }
             }
 
 

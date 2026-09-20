@@ -83,6 +83,11 @@
             background: #218838;
         }
 
+        .submit-button:disabled {
+            background: #a3d9b1;
+            cursor: not-allowed;
+        }
+
         #loading {
             text-align: center;
             font-size: 20px;
@@ -383,11 +388,19 @@
     // SUBMIT CONFIRMATION
     // ------------------------------------
 
+    let alreadySubmitted = false;
+
     document.getElementById(
         "examForm"
     ).addEventListener(
         "submit",
         function(event) {
+
+            if (alreadySubmitted) {
+
+                event.preventDefault();
+                return;
+            }
 
             const confirmSubmit =
                 confirm(
@@ -397,7 +410,18 @@
             if (!confirmSubmit) {
 
                 event.preventDefault();
+                return;
             }
+
+            alreadySubmitted = true;
+
+            const submitBtn =
+                document.querySelector(
+                    ".submit-button"
+                );
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting...";
 
         }
     );

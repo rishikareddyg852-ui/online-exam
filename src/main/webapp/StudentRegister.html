@@ -68,6 +68,11 @@
             color: white;
         }
 
+        .success-btn:disabled {
+            background: #a3d9b1;
+            cursor: not-allowed;
+        }
+
         .info-btn {
             background: #17a2b8;
             color: white;
@@ -121,7 +126,8 @@
 
 
     <form method="POST"
-          action="StudentRegisterServlet">
+          action="StudentRegisterServlet"
+          onsubmit="document.getElementById('submitBtn').disabled = true; document.getElementById('submitBtn').textContent = 'Please wait...';">
 
 
         <input type="text"
@@ -155,6 +161,7 @@
 
 
         <button type="submit"
+                id="submitBtn"
                 class="success-btn">
 
             Create Account
