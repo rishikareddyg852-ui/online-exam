@@ -136,17 +136,21 @@
             <p id="examDescription"></p>
 
             <p>
+
                 <b>Duration:</b>
 
                 <span id="examDuration"></span>
 
                 minutes
+
             </p>
 
         </div>
 
 
-        <!-- IMPORTANT -->
+        <!-- ===================================
+             EXAM FORM
+             =================================== -->
 
         <form id="examForm"
               action="ExamSubmitServlet"
@@ -165,6 +169,8 @@
 
             </div>
 
+
+            <!-- Submit -->
 
             <div class="submit-box">
 
@@ -186,41 +192,54 @@
 
 <script>
 
-//------------------------------------
-//GET EXAM ID
-//------------------------------------
 
-const url =
- new URLSearchParams(
-     window.location.search
- );
+    // ==========================================
+    // GET EXAM ID
+    // ==========================================
 
-const examId =
- url.get("id") || url.get("examId");
+    const url =
+        new URLSearchParams(
+            window.location.search
+        );
 
 
-//------------------------------------
-//CHECK EXAM ID
-//------------------------------------
+    /*
+     * Supports both:
+     *
+     * ExamPlay.html?id=3
+     *
+     * and
+     *
+     * ExamPlay.html?examId=3
+     */
 
-if (!examId) {
+    const examId =
+        url.get("id") || url.get("examId");
 
- showError(
-     "Exam ID is missing."
- );
 
-} else {
+    // ==========================================
+    // CHECK EXAM ID
+    // ==========================================
 
- document.getElementById(
-     "examId"
- ).value = examId;
+    if (!examId) {
 
- loadExam(examId);
-}
+        showError(
+            "Exam ID is missing."
+        );
 
-    // ------------------------------------
+    } else {
+
+        document.getElementById(
+            "examId"
+        ).value = examId;
+
+        loadExam(examId);
+    }
+
+
+    // ==========================================
     // LOAD EXAM
-    // ------------------------------------
+    // ==========================================
 
     function loadExam(id) {
 
@@ -244,24 +263,75 @@ if (!examId) {
 
         .then(function(data) {
 
-            // Already attempted (or session missing) - the servlet tells us
-            // where to go instead of sending questions. Navigate there and
-            // stop, so the exam form never renders.
-            if (data.redirect) {
 
-                window.location.href = data.redirect;
+            // ==================================
+            // ALREADY ATTEMPTED / REDIRECT
+            // ==================================
+
+            if (data.alreadyAttempted) {
+
+                document.getElementById(
+                    "loading"
+                ).style.display = "none";
+
+
+                const error =
+                    document.getElementById(
+                        "error"
+                    );
+
+
+                error.innerHTML =
+
+                    "<h2>You have already submitted this exam.</h2>" +
+
+                    "<p>You cannot attempt this exam again.</p>" +
+
+                    "<br>" +
+
+                    "<a href='StudentResult.html?examId=" +
+                    encodeURIComponent(id) +
+                    "'>View Result</a>";
+
+
+                error.style.display =
+                    "block";
+
 
                 return;
             }
 
+
+            // ==================================
+            // SERVER REDIRECT
+            // ==================================
+
+            if (data.redirect) {
+
+                window.location.href =
+                    data.redirect;
+
+                return;
+            }
+
+
+            // ==================================
+            // ERROR
+            // ==================================
 
             if (data.error) {
 
-                showError(data.error);
+                showError(
+                    data.error
+                );
 
                 return;
             }
 
+
+            // ==================================
+            // DISPLAY EXAM DETAILS
+            // ==================================
 
             document.getElementById(
                 "examTitle"
@@ -281,10 +351,18 @@ if (!examId) {
                 data.duration;
 
 
+            // ==================================
+            // DISPLAY QUESTIONS
+            // ==================================
+
             displayQuestions(
                 data.questions
             );
 
+
+            // ==================================
+            // SHOW EXAM PAGE
+            // ==================================
 
             document.getElementById(
                 "loading"
@@ -308,12 +386,13 @@ if (!examId) {
             );
 
         });
+
     }
 
 
-    // ------------------------------------
+    // ==========================================
     // DISPLAY QUESTIONS
-    // ------------------------------------
+    // ==========================================
 
     function displayQuestions(questions) {
 
@@ -321,6 +400,7 @@ if (!examId) {
             document.getElementById(
                 "questionsContainer"
             );
+
 
         container.innerHTML = "";
 
@@ -339,10 +419,12 @@ if (!examId) {
         questions.forEach(
             function(q, index) {
 
+
                 const div =
                     document.createElement(
                         "div"
                     );
+
 
                 div.className =
                     "question";
@@ -358,145 +440,171 @@ if (!examId) {
                     q.questionText +
                     "</b></p>" +
 
+
                     "<label class='option'>" +
+
                     "<input type='radio' " +
-                    "name='q_" + q.id + "' " +
+
+                    "name='q_" +
+                    q.id +
+                    "' " +
+
                     "value='A'>" +
-                    " " + q.optionA +
+
+                    " " +
+                    q.optionA +
+
                     "</label>" +
 
+
                     "<label class='option'>" +
+
                     "<input type='radio' " +
-                    "name='q_" + q.id + "' " +
+
+                    "name='q_" +
+                    q.id +
+                    "' " +
+
                     "value='B'>" +
-                    " " + q.optionB +
+
+                    " " +
+                    q.optionB +
+
                     "</label>" +
 
+
                     "<label class='option'>" +
+
                     "<input type='radio' " +
-                    "name='q_" + q.id + "' " +
+
+                    "name='q_" +
+                    q.id +
+                    "' " +
+
                     "value='C'>" +
-                    " " + q.optionC +
+
+                    " " +
+                    q.optionC +
+
                     "</label>" +
 
+
                     "<label class='option'>" +
+
                     "<input type='radio' " +
-                    "name='q_" + q.id + "' " +
+
+                    "name='q_" +
+                    q.id +
+                    "' " +
+
                     "value='D'>" +
-                    " " + q.optionD +
+
+                    " " +
+                    q.optionD +
+
                     "</label>";
 
 
-                container.appendChild(div);
+                container.appendChild(
+                    div
+                );
 
             }
         );
+
     }
 
 
- // ------------------------------------
-    // SUBMIT CONFIRMATION (fetch-based, with retry on network failure)
-    // ------------------------------------
+    // ==========================================
+    // SUBMIT EXAM
+    // ==========================================
 
     let isSubmitting = false;
 
+
     const examFormEl =
-        document.getElementById("examForm");
+        document.getElementById(
+            "examForm"
+        );
+
 
     const submitBtnEl =
-        document.querySelector(".submit-button");
+        document.querySelector(
+            ".submit-button"
+        );
 
-    // Disable the button the INSTANT it's clicked -- before the confirm()
-    // dialog even opens. This is what actually guarantees no double-click
-    // or double-submit can happen, regardless of dialog timing.
-    submitBtnEl.addEventListener(
-        "click",
-        function() {
-            submitBtnEl.disabled = true;
-            submitBtnEl.textContent = "Submitting...";
-        }
-    );
 
     examFormEl.addEventListener(
         "submit",
         function(event) {
 
-            // Always prevent default - we handle submission manually
+
+            // Prevent normal submission first
             event.preventDefault();
 
+
+            // Prevent double submission
             if (isSubmitting) {
+
                 return;
             }
 
+
+            // Confirmation
             const confirmSubmit =
                 confirm(
                     "Are you sure you want to submit the exam?"
                 );
 
+
             if (!confirmSubmit) {
 
-                // They backed out - re-enable so they can actually submit later
-                submitBtnEl.disabled = false;
-                submitBtnEl.textContent = "Submit Exam";
                 return;
             }
 
+
+            // ==================================
+            // LOCK SUBMISSION
+            // ==================================
+
             isSubmitting = true;
 
-            submitExamForm();
+
+            submitBtnEl.disabled =
+                true;
+
+
+            submitBtnEl.textContent =
+                "Please wait...";
+
+
+            // ==================================
+            // NORMAL FORM SUBMISSION
+            // ==================================
+
+            /*
+             * This sends the form directly to:
+             *
+             * ExamSubmitServlet
+             *
+             * The servlet will calculate the score,
+             * save the result and redirect to:
+             *
+             * StudentResult.html?examId=...
+             */
+
+            examFormEl.submit();
+
         }
     );
 
-    function submitExamForm() {
 
-        const submitBtn = submitBtnEl;
-
-        const form = examFormEl;
-
-        const formData =
-            new FormData(form);
-
-        fetch(form.action, {
-            method: "POST",
-            body: formData
-        })
-        .then(function(response) {
-
-            if (!response.ok) {
-                throw new Error(
-                    "Server error while submitting"
-                );
-            }
-
-            // Success - server redirected us logically,
-            // now navigate to the result page ourselves
-            window.location.href =
-                "StudentResult.html?examId=" + examId;
-
-        })
-        .catch(function(error) {
-
-            console.log(error);
-
-            // Network error or server failure -
-            // re-enable the button so the user can retry
-            isSubmitting = false;
-
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Submit Exam";
-
-            alert(
-                "Submission failed due to a network error. Please try again."
-            );
-
-        });
-    }
-
-    // ------------------------------------
-    // ERROR
-    // ------------------------------------
+    // ==========================================
+    // SHOW ERROR
+    // ==========================================
 
     function showError(message) {
+
 
         document.getElementById(
             "loading"
@@ -509,12 +617,16 @@ if (!examId) {
                 "error"
             );
 
+
         error.innerText =
             message;
 
+
         error.style.display =
             "block";
+
     }
+
 
 </script>
 
