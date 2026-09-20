@@ -42,7 +42,6 @@ public class ExamSubmitServlet extends HttpServlet {
             return;
         }
 
-
         // ---------------------------------------
         // 2. Get student ID
         // ---------------------------------------
@@ -56,7 +55,6 @@ public class ExamSubmitServlet extends HttpServlet {
 
             return;
         }
-
 
         int studentId;
 
@@ -74,14 +72,12 @@ public class ExamSubmitServlet extends HttpServlet {
             return;
         }
 
-
         // ---------------------------------------
         // 3. Get exam ID
         // ---------------------------------------
 
         String examIdText =
                 req.getParameter("exam_id");
-
 
         // Also support examId
         if (examIdText == null ||
@@ -90,7 +86,6 @@ public class ExamSubmitServlet extends HttpServlet {
             examIdText =
                     req.getParameter("examId");
         }
-
 
         if (examIdText == null ||
                 examIdText.trim().isEmpty()) {
@@ -101,7 +96,6 @@ public class ExamSubmitServlet extends HttpServlet {
 
             return;
         }
-
 
         int examId;
 
@@ -121,14 +115,13 @@ public class ExamSubmitServlet extends HttpServlet {
             return;
         }
 
-
         try {
 
             ResultDAO resultDAO =
                     new ResultDAO();
 
             // ---------------------------------------
-            // 4. Block re-submission immediately
+            // 4. Block re-submission
             // ---------------------------------------
 
             if (resultDAO.hasAttempted(
@@ -136,15 +129,12 @@ public class ExamSubmitServlet extends HttpServlet {
                     examId
             )) {
 
-                // Already submitted before - don't recalculate or resave,
-                // just send them to their existing result.
                 resp.sendRedirect(
                         "StudentResult.html?examId=" + examId
                 );
 
                 return;
             }
-
 
             // ---------------------------------------
             // 5. Get exam
@@ -158,7 +148,6 @@ public class ExamSubmitServlet extends HttpServlet {
                             examId
                     );
 
-
             if (exam == null) {
 
                 resp.sendRedirect(
@@ -167,7 +156,6 @@ public class ExamSubmitServlet extends HttpServlet {
 
                 return;
             }
-
 
             // ---------------------------------------
             // 6. Get questions
@@ -181,7 +169,6 @@ public class ExamSubmitServlet extends HttpServlet {
                             examId
                     );
 
-
             if (questions == null ||
                     questions.isEmpty()) {
 
@@ -189,7 +176,6 @@ public class ExamSubmitServlet extends HttpServlet {
                         "No questions found for this exam."
                 );
             }
-
 
             // ---------------------------------------
             // 7. Calculate score
@@ -200,7 +186,6 @@ public class ExamSubmitServlet extends HttpServlet {
             int totalMarks =
                     questions.size();
 
-
             for (Question question :
                     questions) {
 
@@ -210,10 +195,8 @@ public class ExamSubmitServlet extends HttpServlet {
                                 question.getId()
                         );
 
-
                 String correctAnswer =
                         question.getCorrectOption();
-
 
                 if (studentAnswer != null &&
                         correctAnswer != null) {
@@ -224,7 +207,6 @@ public class ExamSubmitServlet extends HttpServlet {
                     correctAnswer =
                             correctAnswer.trim();
 
-
                     if (studentAnswer.equalsIgnoreCase(
                             correctAnswer
                     )) {
@@ -233,7 +215,6 @@ public class ExamSubmitServlet extends HttpServlet {
                     }
                 }
             }
-
 
             // ---------------------------------------
             // 8. Save result
@@ -248,24 +229,38 @@ public class ExamSubmitServlet extends HttpServlet {
                         totalMarks
                 );
 
-            } catch (SQLException dupEx) {
+            } catch (SQLException e) {
 
-                // Duplicate blocked by DB unique constraint - safe to ignore
-                System.out.println(
-                        "Duplicate result submission blocked: "
-                        + dupEx.getMessage()
-                );
+                /*
+                 * If another request submitted the same
+                 * student + exam at the same time,
+                 * the database UNIQUE constraint blocks
+                 * the second INSERT.
+                 */
+
+                if (resultDAO.hasAttempted(
+                        studentId,
+                        examId
+                )) {
+
+                    resp.sendRedirect(
+                            "StudentResult.html?examId=" + examId
+                    );
+
+                    return;
+                }
+
+                // Some other database error
+                throw e;
             }
 
-
             // ---------------------------------------
-            // 9. Go to HTML result page
+            // 9. Go to result page
             // ---------------------------------------
 
             resp.sendRedirect(
                     "StudentResult.html?examId=" + examId
             );
-
 
         } catch (SQLException e) {
 
@@ -273,10 +268,9 @@ public class ExamSubmitServlet extends HttpServlet {
 
             throw new ServletException(
                     "Database error while submitting exam: "
-                    + e.getMessage(),
+                            + e.getMessage(),
                     e
             );
-
 
         } catch (Exception e) {
 
@@ -284,7 +278,7 @@ public class ExamSubmitServlet extends HttpServlet {
 
             throw new ServletException(
                     "Error while submitting exam: "
-                    + e.getMessage(),
+                            + e.getMessage(),
                     e
             );
         }

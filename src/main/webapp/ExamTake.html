@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
@@ -12,92 +12,113 @@
 
     <style>
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
             margin: 0;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
         }
 
         .container {
             width: 90%;
             max-width: 900px;
-            margin: auto;
+            margin: 30px auto;
         }
 
-        .header {
-            background: #007bff;
-            color: white;
-            padding: 20px;
-            text-align: center;
+        .exam-header {
+            background: white;
+            padding: 25px;
             border-radius: 10px;
             margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .exam-header h1 {
+            margin-top: 0;
         }
 
         .exam-info {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            margin-top: 15px;
+            font-size: 16px;
         }
 
-        .question {
+        .question-card {
             background: white;
             padding: 20px;
-            border-radius: 10px;
             margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .question-number {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 15px;
         }
 
         .option {
-            display: block;
-            padding: 12px;
-            margin: 8px 0;
-            background: #f5f5f5;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
             border-radius: 6px;
-            cursor: pointer;
         }
 
         .option:hover {
-            background: #e8e8e8;
+            background: #f5f5f5;
         }
 
-        .submit-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
+        .option input {
+            margin-right: 8px;
+        }
+
+        .submit-container {
+            text-align: center;
+            margin: 30px 0;
         }
 
         .submit-button {
-            width: 100%;
-            padding: 15px;
-            background: #28a745;
-            color: white;
+            padding: 12px 30px;
+            font-size: 17px;
             border: none;
             border-radius: 6px;
-            font-size: 18px;
             cursor: pointer;
-        }
-
-        .submit-button:hover {
-            background: #218838;
+            background: #007bff;
+            color: white;
         }
 
         .submit-button:disabled {
-            background: #a3d9b1;
+            background: #999;
             cursor: not-allowed;
         }
 
         #loading {
             text-align: center;
-            font-size: 20px;
+            padding: 30px;
+            font-size: 18px;
         }
 
         #error {
-            color: red;
-            background: #ffe6e6;
-            padding: 15px;
-            border-radius: 6px;
+            display: none;
+            background: white;
+            padding: 30px;
+            margin-top: 30px;
+            border-radius: 10px;
+            text-align: center;
+            color: #c0392b;
+        }
+
+        #questionsContainer {
+            display: none;
+        }
+
+        #examContent {
             display: none;
         }
 
@@ -109,70 +130,70 @@
 
 <div class="container">
 
-    <div class="header">
-
-        <h1>Online Examination</h1>
-
-    </div>
-
-
+    <!-- Loading -->
     <div id="loading">
-
         Loading exam...
-
     </div>
 
 
+    <!-- Error -->
     <div id="error"></div>
 
 
-    <div id="examPage"
-         style="display:none;">
+    <!-- Exam Content -->
+    <div id="examContent">
 
-        <div class="exam-info">
+        <!-- Exam Header -->
+        <div class="exam-header">
 
-            <h2 id="examTitle"></h2>
+            <h1 id="examTitle">
+                Exam
+            </h1>
 
             <p id="examDescription"></p>
 
-            <p>
-                <b>Duration:</b>
+            <div class="exam-info">
 
-                <span id="examDuration"></span>
+                <strong>Duration:</strong>
+
+                <span id="examDuration">
+                    -
+                </span>
 
                 minutes
-            </p>
+
+            </div>
 
         </div>
 
 
-        <!-- IMPORTANT -->
+        <!-- Exam Form -->
+        <form
+            id="examForm"
+            action="ExamSubmitServlet"
+            method="post"
+        >
 
-        <form id="examForm"
-              action="ExamSubmitServlet"
-              method="post">
-
-            <!-- Exam ID -->
-
-            <input type="hidden"
-                   id="examId"
-                   name="exam_id">
+            <!-- Hidden Exam ID -->
+            <input
+                type="hidden"
+                id="examId"
+                name="exam_id"
+            >
 
 
             <!-- Questions -->
-
-            <div id="questionsContainer">
-
-            </div>
+            <div id="questionsContainer"></div>
 
 
-            <div class="submit-box">
+            <!-- Submit -->
+            <div class="submit-container">
 
-                <button type="submit"
-                        class="submit-button">
-
+                <button
+                    type="submit"
+                    class="submit-button"
+                >
                     Submit Exam
-
                 </button>
 
             </div>
@@ -186,9 +207,9 @@
 
 <script>
 
-    // ------------------------------------
-    // GET EXAM ID
-    // ------------------------------------
+    // ---------------------------------------
+    // Get Exam ID from URL
+    // ---------------------------------------
 
     const url =
         new URLSearchParams(
@@ -199,9 +220,9 @@
         url.get("id");
 
 
-    // ------------------------------------
-    // CHECK EXAM ID
-    // ------------------------------------
+    // ---------------------------------------
+    // Check Exam ID
+    // ---------------------------------------
 
     if (!examId) {
 
@@ -211,17 +232,16 @@
 
     } else {
 
-        document.getElementById(
-            "examId"
-        ).value = examId;
+        document.getElementById("examId").value =
+            examId;
 
         loadExam(examId);
     }
 
 
-    // ------------------------------------
-    // LOAD EXAM
-    // ------------------------------------
+    // ---------------------------------------
+    // Load Exam
+    // ---------------------------------------
 
     function loadExam(id) {
 
@@ -235,57 +255,107 @@
             if (!response.ok) {
 
                 throw new Error(
-                    "Server error"
+                    "Failed to load exam."
                 );
             }
 
             return response.json();
-
         })
 
         .then(function(data) {
 
-            if (data.error) {
+            // ---------------------------------------
+            // Already Submitted
+            // ---------------------------------------
 
-                showError(data.error);
+            if (data.alreadyAttempted) {
+
+                document.getElementById(
+                    "loading"
+                ).style.display = "none";
+
+                const error =
+                    document.getElementById(
+                        "error"
+                    );
+
+                error.innerHTML =
+                    "<h2>You have already submitted this exam.</h2>" +
+                    "<p>You cannot attempt this exam again.</p>" +
+                    "<br>" +
+                    "<a href='StudentResult.html?examId=" +
+                    encodeURIComponent(id) +
+                    "'>View Result</a>";
+
+                error.style.display =
+                    "block";
 
                 return;
             }
 
 
+            // ---------------------------------------
+            // Other Error
+            // ---------------------------------------
+
+            if (data.error) {
+
+                showError(
+                    data.error
+                );
+
+                return;
+            }
+
+
+            // ---------------------------------------
+            // Display Exam
+            // ---------------------------------------
+
             document.getElementById(
                 "examTitle"
-            ).innerText =
-                data.title;
+            ).textContent =
+                data.title || "Exam";
 
 
             document.getElementById(
                 "examDescription"
-            ).innerText =
-                data.description;
+            ).textContent =
+                data.description || "";
 
 
             document.getElementById(
                 "examDuration"
-            ).innerText =
-                data.duration;
+            ).textContent =
+                data.duration || "0";
 
+
+            // ---------------------------------------
+            // Display Questions
+            // ---------------------------------------
 
             displayQuestions(
                 data.questions
             );
 
 
+            // ---------------------------------------
+            // Show Exam
+            // ---------------------------------------
+
             document.getElementById(
                 "loading"
-            ).style.display =
-                "none";
+            ).style.display = "none";
 
 
             document.getElementById(
-                "examPage"
-            ).style.display =
-                "block";
+                "examContent"
+            ).style.display = "block";
+
+
+            document.getElementById(
+                "questionsContainer"
+            ).style.display = "block";
 
         })
 
@@ -294,16 +364,17 @@
             console.log(error);
 
             showError(
-                "Error loading exam."
+                "Unable to load the exam. Please try again."
             );
 
         });
+
     }
 
 
-    // ------------------------------------
-    // DISPLAY QUESTIONS
-    // ------------------------------------
+    // ---------------------------------------
+    // Display Questions
+    // ---------------------------------------
 
     function displayQuestions(questions) {
 
@@ -312,6 +383,7 @@
                 "questionsContainer"
             );
 
+
         container.innerHTML = "";
 
 
@@ -319,7 +391,7 @@
             questions.length === 0) {
 
             showError(
-                "No questions available."
+                "No questions found for this exam."
             );
 
             return;
@@ -327,68 +399,190 @@
 
 
         questions.forEach(
-            function(q, index) {
+            function(question, index) {
 
-                const div =
+                const questionCard =
                     document.createElement(
                         "div"
                     );
 
-                div.className =
-                    "question";
+                questionCard.className =
+                    "question-card";
 
 
-                div.innerHTML =
+                // Question Number
+                const questionNumber =
+                    document.createElement(
+                        "div"
+                    );
 
-                    "<h3>Question " +
-                    (index + 1) +
-                    "</h3>" +
+                questionNumber.className =
+                    "question-number";
 
-                    "<p><b>" +
-                    q.questionText +
-                    "</b></p>" +
-
-                    "<label class='option'>" +
-                    "<input type='radio' " +
-                    "name='q_" + q.id + "' " +
-                    "value='A'>" +
-                    " " + q.optionA +
-                    "</label>" +
-
-                    "<label class='option'>" +
-                    "<input type='radio' " +
-                    "name='q_" + q.id + "' " +
-                    "value='B'>" +
-                    " " + q.optionB +
-                    "</label>" +
-
-                    "<label class='option'>" +
-                    "<input type='radio' " +
-                    "name='q_" + q.id + "' " +
-                    "value='C'>" +
-                    " " + q.optionC +
-                    "</label>" +
-
-                    "<label class='option'>" +
-                    "<input type='radio' " +
-                    "name='q_" + q.id + "' " +
-                    "value='D'>" +
-                    " " + q.optionD +
-                    "</label>";
+                questionNumber.textContent =
+                    "Question " +
+                    (index + 1);
 
 
-                container.appendChild(div);
+                // Question Text
+                const questionText =
+                    document.createElement(
+                        "div"
+                    );
+
+                questionText.className =
+                    "question-text";
+
+                questionText.textContent =
+                    question.questionText;
+
+
+                // Options
+                const options =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                // Option A
+                const optionA =
+                    createOption(
+                        question.id,
+                        "A",
+                        question.optionA
+                    );
+
+
+                // Option B
+                const optionB =
+                    createOption(
+                        question.id,
+                        "B",
+                        question.optionB
+                    );
+
+
+                // Option C
+                const optionC =
+                    createOption(
+                        question.id,
+                        "C",
+                        question.optionC
+                    );
+
+
+                // Option D
+                const optionD =
+                    createOption(
+                        question.id,
+                        "D",
+                        question.optionD
+                    );
+
+
+                options.appendChild(optionA);
+                options.appendChild(optionB);
+                options.appendChild(optionC);
+                options.appendChild(optionD);
+
+
+                questionCard.appendChild(
+                    questionNumber
+                );
+
+                questionCard.appendChild(
+                    questionText
+                );
+
+                questionCard.appendChild(
+                    options
+                );
+
+
+                container.appendChild(
+                    questionCard
+                );
 
             }
         );
+
     }
 
 
- // ------------------------------------
-    // SUBMIT CONFIRMATION (fetch-based, with retry on network failure)
-    // ------------------------------------
+    // ---------------------------------------
+    // Create Option
+    // ---------------------------------------
+
+    function createOption(
+        questionId,
+        optionValue,
+        optionText
+    ) {
+
+        const option =
+            document.createElement(
+                "div"
+            );
+
+        option.className =
+            "option";
+
+
+        const label =
+            document.createElement(
+                "label"
+            );
+
+
+        const radio =
+            document.createElement(
+                "input"
+            );
+
+
+        radio.type =
+            "radio";
+
+
+        radio.name =
+            "q_" +
+            questionId;
+
+
+        radio.value =
+            optionValue;
+
+
+        label.appendChild(
+            radio
+        );
+
+
+        label.appendChild(
+            document.createTextNode(
+                optionValue +
+                ". " +
+                (optionText || "")
+            )
+        );
+
+
+        option.appendChild(
+            label
+        );
+
+
+        return option;
+
+    }
+
+
+    // ---------------------------------------
+    // Submit Protection
+    // ---------------------------------------
 
     let isSubmitting = false;
+
 
     document.getElementById(
         "examForm"
@@ -396,92 +590,163 @@
         "submit",
         function(event) {
 
-            // Always prevent default - we handle submission manually
+            // Stop normal form submission
             event.preventDefault();
 
+
+            // ---------------------------------------
+            // Prevent Double Click
+            // ---------------------------------------
+
             if (isSubmitting) {
+
                 return;
             }
+
+
+            // ---------------------------------------
+            // Confirmation
+            // ---------------------------------------
 
             const confirmSubmit =
                 confirm(
                     "Are you sure you want to submit the exam?"
                 );
 
+
             if (!confirmSubmit) {
+
                 return;
             }
 
+
             submitExamForm();
+
         }
     );
 
+
+    // ---------------------------------------
+    // Submit Exam
+    // ---------------------------------------
+
     function submitExamForm() {
 
+        // ---------------------------------------
+        // Immediately Lock Submission
+        // ---------------------------------------
+
         isSubmitting = true;
+
 
         const submitBtn =
             document.querySelector(
                 ".submit-button"
             );
 
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Submitting...";
+
+        // Disable button immediately
+        submitBtn.disabled =
+            true;
+
+
+        // Change button text
+        submitBtn.textContent =
+            "Please wait...";
+
+
+        // ---------------------------------------
+        // Get Form
+        // ---------------------------------------
 
         const form =
             document.getElementById(
                 "examForm"
             );
 
+
         const formData =
             new FormData(form);
 
-        fetch(form.action, {
-            method: "POST",
-            body: formData
-        })
+
+        // ---------------------------------------
+        // Send POST Request
+        // ---------------------------------------
+
+        fetch(
+            form.action,
+            {
+                method: "POST",
+                body: formData
+            }
+        )
+
         .then(function(response) {
 
             if (!response.ok) {
+
                 throw new Error(
                     "Server error while submitting"
                 );
             }
 
-            // Success - server redirected us logically,
-            // now navigate to the result page ourselves
+
+            // ---------------------------------------
+            // Go to Result
+            // ---------------------------------------
+
             window.location.href =
-                "StudentResult.html";
+                "StudentResult.html?examId=" +
+                encodeURIComponent(
+                    examId
+                );
 
         })
+
         .catch(function(error) {
 
             console.log(error);
 
-            // Network error or server failure -
-            // re-enable the button so the user can retry
-            isSubmitting = false;
 
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Submit Exam";
+            // ---------------------------------------
+            // Allow Retry Only if Network Error
+            // ---------------------------------------
+
+            isSubmitting =
+                false;
+
+
+            submitBtn.disabled =
+                false;
+
+
+            submitBtn.textContent =
+                "Submit Exam";
+
 
             alert(
                 "Submission failed due to a network error. Please try again."
             );
 
         });
+
     }
 
-    // ------------------------------------
-    // ERROR
-    // ------------------------------------
+
+    // ---------------------------------------
+    // Show Error
+    // ---------------------------------------
 
     function showError(message) {
 
         document.getElementById(
             "loading"
-        ).style.display =
-            "none";
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "examContent"
+        ).style.display = "none";
 
 
         const error =
@@ -489,11 +754,17 @@
                 "error"
             );
 
-        error.innerText =
-            message;
+
+        error.innerHTML =
+            "<h2>Error</h2>" +
+            "<p>" +
+            message +
+            "</p>";
+
 
         error.style.display =
             "block";
+
     }
 
 </script>
