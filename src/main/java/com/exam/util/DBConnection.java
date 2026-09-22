@@ -13,10 +13,10 @@ public class DBConnection {
     // Falls back to your local MySQL settings if env vars aren't set,
     // so this still works unchanged on your own machine.
 
-    private static final String HOST     = getEnv("DB_HOST", "onlineexamdb-rishikareddyg852-c766.j.aivencloud.com");
-    private static final String PORT     = getEnv("DB_PORT", "15069");
-    private static final String DATABASE = getEnv("DB_NAME", "online_exam_db");
-    private static final String USER     = getEnv("DB_USER", "avnadmin");
+    private static final String HOST     = getEnv("DB_HOST", "bfqttba1kmkmwun7deog-mysql.services.clever-cloud.com");
+    private static final String PORT     = getEnv("DB_PORT", "3306");
+    private static final String DATABASE = getEnv("DB_NAME", "bfqttba1kmkmwun7deog");
+    private static final String USER     = getEnv("DB_USER", "u8lrtvtngfcmrtko");
    // private static final String PASSWORD = getEnv("DB_PASSWORD", "");
     private static final String PASSWORD = getEnv("DB_PASSWORD", getPropertyFallback("db.password", ""));
     // SSL is required for Aiven's MySQL. Locally (localhost) this is
@@ -62,6 +62,13 @@ public class DBConnection {
         } catch (IOException e) {
             System.err.println("Error reading config.properties file: " + e.getMessage());
             return defaultFallback;
+        }
+    }
+    public static void main(String[] args) {
+        try (Connection conn = getConnection()) {
+            System.out.println("Connected successfully!");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
     
